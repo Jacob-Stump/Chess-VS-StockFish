@@ -1,0 +1,11 @@
+
+public enum PieceType {
+	
+	NONE, //ALWAYS PUT A 0 VALUE BECAUSE ENUM MAGIC
+	PAWN,
+	KNIGHT,
+	ROOK,
+	QUEEN,
+	BISHOP,
+	KING;
+}
