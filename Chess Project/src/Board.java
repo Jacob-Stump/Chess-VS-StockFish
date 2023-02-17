@@ -104,7 +104,7 @@ public class Board implements MouseListener {
     				
     				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
     					if(chessBoard[row][rookRight].type == PieceType.NONE) {
-    						sightBoard[rookRight][col] = true;
+    						sightBoard[row][rookRight] = true;
     					}
     					else {
     						break;				
@@ -771,8 +771,110 @@ public class Board implements MouseListener {
 	}
 	
 	
-	public boolean rookLogic() { //horizontal and vertical movement in all directions(, must check for piece path collision 
-		return true;
+	public void rookMove() {
+		int row = selectedPieceLocation[0];
+		int col = selectedPieceLocation[1];
+		int rowDest = destinationPieceLocation[0];
+		int colDest = destinationPieceLocation[1];
+		
+		if(destinationPiece.type != PieceType.KING) {
+			if(rowDest > row) { // down movement 
+				for(int rookDown = row + 1; rookDown < 8; rookDown++) {
+					if(chessBoard[rookDown][col] == chessBoard[rowDest][colDest]) {
+						if(chessBoard[rookDown][col].color == PieceColor.BLACK) {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							}
+						else {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+						}
+					}
+					else if(chessBoard[rookDown][col].color == PieceColor.WHITE) {
+						break;
+					}
+					else if(chessBoard[rookDown][col].color == PieceColor.BLACK) {
+						break;
+					}
+				}
+			}
+			if(rowDest < row) { // up movement 
+				for(int rookUp = row - 1; rookUp >= 0; rookUp--) {
+					if(chessBoard[rookUp][col] == chessBoard[rowDest][colDest]) {
+						if(chessBoard[rookUp][col].color == PieceColor.BLACK) {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							}
+						else {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+						}
+						break;
+					}
+					else if(chessBoard[rookUp][col].color == PieceColor.WHITE) {
+						break;
+					}
+					else if(chessBoard[rookUp][col].color == PieceColor.BLACK) {
+						break;
+					}
+				}
+			}
+			if(colDest > col) {// right movement 
+				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
+					if(chessBoard[row][rookRight] == chessBoard[rowDest][colDest]) {
+						if(chessBoard[row][rookRight].color == PieceColor.BLACK) {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							}
+						else {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+						}
+						break;
+					}
+					else if(chessBoard[row][rookRight].color == PieceColor.WHITE) {
+						break;
+					}
+					else if(chessBoard[row][rookRight].color == PieceColor.BLACK) {
+						break;
+					}
+				}
+			}
+			
+			if(colDest < col) {// left movement 	
+				for(int rookLeft = col - 1; rookLeft >= 0; rookLeft--) {
+					if(chessBoard[row][rookLeft] == chessBoard[rowDest][colDest]) {
+						if(chessBoard[row][rookLeft].color == PieceColor.BLACK) {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							}
+						else {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+						}
+						break;
+					}
+					else if(chessBoard[row][rookLeft].color == PieceColor.WHITE) {
+						break;
+					}
+					else if(chessBoard[row][rookLeft].color == PieceColor.BLACK) {
+						break;
+					}
+				}
+			}
+		}
+		
+		boardState();
+		pieceSight();
+		frame.repaint();
 	}
 	
 	public void pawnMove() { // can only move 2 squares (col index - 2) if .hasMoved == false, can only move 1 square (col - 1) unless taking a piece (row index -1, col index +-1)
@@ -1071,6 +1173,11 @@ public class Board implements MouseListener {
 		else if(selectedPiece.type == PieceType.BISHOP) {
 			bishopMove();
 		}
+		
+		else if(selectedPiece.type == PieceType.ROOK) {
+			rookMove();
+		}
+		
 		
 	}
 	@Override
