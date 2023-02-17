@@ -100,7 +100,6 @@ public class Board implements MouseListener {
     					else {
     						break;				
     					}
-    					
     				}
     				
     				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
@@ -110,7 +109,6 @@ public class Board implements MouseListener {
     					else {
     						break;				
     					}
-    					
     				}	
     				
     				for(int rookLeft = col - 1; rookLeft >= 0; rookLeft--) {
@@ -120,7 +118,6 @@ public class Board implements MouseListener {
     					else {
     						break;				
     					}
-    					
     				}
     				
     				for(int rookUp = row - 1; rookUp >= 0; rookUp--) {
@@ -340,7 +337,6 @@ public class Board implements MouseListener {
     					else {
     						break;				
     					}
-    					
     				}
     				
     				for(int queenRight = col + 1; queenRight < 8; queenRight++) {
@@ -350,7 +346,6 @@ public class Board implements MouseListener {
     					else {
     						break;				
     					}
-    					
     				}	
     				
     				for(int queenLeft = col - 1; queenLeft >= 0; queenLeft--) {
@@ -359,8 +354,7 @@ public class Board implements MouseListener {
     					}
     					else {
     						break;				
-    					}
-    					
+    					}	
     				}
     				
     				for(int queenUp = row - 1; queenUp >= 0; queenUp--) {
@@ -371,8 +365,6 @@ public class Board implements MouseListener {
     						break;				
     					}
     				}
-    				
-    				
     			}
     			
     			if(chessBoard[row][col].color == PieceColor.WHITE && chessBoard[row][col].type == PieceType.KING) {
@@ -434,11 +426,6 @@ public class Board implements MouseListener {
     	sightState();
     }
 	
-    
-    
-    
-    
-    
     public int[] getPosition(Pieces p) {
     	for(int row = 0; row < 8; row++) {
 			for(int col = 0; col < 8; col++) {
@@ -596,31 +583,33 @@ public class Board implements MouseListener {
 		int bishopRowDown = row + 1;
 		int bishopRowUp = row - 1;
 		
-		if(destinationPiece.color != selectedPiece.color && destinationPiece.type != PieceType.KING) {
-			if(destinationPiece.type != PieceType.NONE) {
-				
-				while(bishopRowUp >= 0 && bishopColLeft >= 0) { //checking upper left diagonal
-					if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
-						if(bishopRowUp == rowDest && bishopColLeft == colDest) {
+		if(rowDest < row && colDest < col ) { //if the move is upper left
+			if(destinationPiece.type != PieceType.NONE) {  // if the destination piece is a black piece 
+				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
+					
+					while(bishopRowUp >= 0 && bishopColLeft >= 0) { 
+						if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.WHITE) {
+							break;
+						}
+						
+						else if (chessBoard[bishopRowUp][bishopColLeft] == chessBoard[rowDest][colDest]) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColLeft] = selectedPiece;
-							int index = pieceBox.indexOf(destinationPiece); 
-							pieceBox.remove(index); 
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
 							break;
-						}	
-						else {
-							bishopRowUp--;
+						}
+						
+						else if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
+							bishopRowUp --;
 							bishopColLeft--;
 						}
-					}
-					else {
-						break;
 					}
 				}
 			}
 			
 			else {
-				while(bishopRowUp >= 0 && bishopColLeft >= 0) { //checking upper left diagonal
+				while(bishopRowUp >= 0 && bishopColLeft >= 0) { 
 					if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
 						
 						if(bishopRowUp == rowDest && bishopColLeft == colDest) {
@@ -639,14 +628,148 @@ public class Board implements MouseListener {
 					}
 				}
 			}
+		}
 			
+		if(rowDest < row && colDest > col) { //if the move is upper right
+			if(destinationPiece.type != PieceType.NONE) {  
+				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
+					while(bishopRowUp >= 0 && bishopColRight < 8) { 
+						if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.WHITE) {
+							break;
+						}
+						
+						else if (chessBoard[bishopRowUp][bishopColRight] == chessBoard[rowDest][colDest]) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							break;
+						}
+						
+						else if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
+							bishopRowUp --;
+							bishopColRight++;
+						}
+					}
+				}
+			}
 			
+			else {
+				while(bishopRowUp >= 0 && bishopColRight < 8) { 
+					if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
+						
+						if(bishopRowUp == rowDest && bishopColRight == colDest) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
+							break;
+						}	
+						else {
+							bishopRowUp--;
+							bishopColRight++;
+						}
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
 			
+		if(rowDest > row && colDest > col) { //if the move is lower right
+			if(destinationPiece.type != PieceType.NONE) {  
+				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
+					while(bishopRowDown < 8 && bishopColRight < 8) { 
+						if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.WHITE) {
+							break;
+						}
+						
+						else if (chessBoard[bishopRowDown][bishopColRight] == chessBoard[rowDest][colDest]) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							break;
+						}
+						
+						else if(chessBoard[bishopRowDown][bishopColRight].type == PieceType.NONE) {
+							bishopRowUp --;
+							bishopColRight++;
+						}
+					}
+				}
+			}
+			
+			else {
+				while(bishopRowDown < 8 && bishopColRight < 8) { 
+					if(chessBoard[bishopRowDown][bishopColRight].type == PieceType.NONE) {
+						
+						if(bishopRowDown == rowDest && bishopColRight == colDest) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
+							break;
+						}	
+						else {
+							bishopRowDown++;
+							bishopColRight++;
+						}
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+		
+		if(rowDest > row && colDest < col) { //if the move is lower left
+			if(destinationPiece.type != PieceType.NONE) {  
+				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
+					while(bishopRowDown < 8  && bishopColLeft >= 0) { 
+						if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.WHITE) {
+							break;
+						}
+						
+						else if (chessBoard[bishopRowDown][bishopColLeft] == chessBoard[rowDest][colDest]) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
+							int index = pieceBox.indexOf(destinationPiece);
+							pieceBox.remove(index);
+							break;
+						}
+						
+						else if(chessBoard[bishopRowDown][bishopColLeft].type == PieceType.NONE) {
+							bishopRowDown++;
+							bishopColLeft--;
+						}
+					}
+				}
+			}
+			
+			else {
+				while(bishopRowDown < 8 && bishopColLeft >= 0) { 
+					if(chessBoard[bishopRowDown][bishopColLeft].type == PieceType.NONE) {
+						
+						if(bishopRowDown == rowDest && bishopColLeft == colDest) {
+							chessBoard[row][col] = nul;
+							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
+							break;
+						}	
+						else {
+							bishopRowDown++;
+							bishopColLeft--;
+						}
+					}
+					else {
+						break;
+					}
+				}
+			}
 		}
 		boardState();
 		pieceSight();
 		frame.repaint();
+	
 	}
+	
 	
 	public boolean rookLogic() { //horizontal and vertical movement in all directions(, must check for piece path collision 
 		return true;
@@ -707,12 +830,8 @@ public class Board implements MouseListener {
 						selectedPiece.hasMoved = true;
 						chessBoard[row][col] = nul;
 						chessBoard[rowDest][colDest] = selectedPiece;
-						//boardState();
-						
-
 					}
 				}
-				
 			}
 			
 			if(rowDest != 0) {
@@ -906,7 +1025,6 @@ public class Board implements MouseListener {
 		board.pieceSight();
     }
 	
-	
 	@Override
 	public void mousePressed(MouseEvent e) {
 
@@ -920,9 +1038,6 @@ public class Board implements MouseListener {
 		System.out.println(Arrays.toString(selectedPieceLocation));
 		System.out.println(selectedPiece); 
 	}
-	
-		
-
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
