@@ -584,183 +584,106 @@ public class Board implements MouseListener {
 		int bishopRowUp = row - 1;
 		
 		if(rowDest < row && colDest < col ) { //if the move is upper left
-			if(destinationPiece.type != PieceType.NONE) {  // if the destination piece is a black piece 
-				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
-					
-					while(bishopRowUp >= 0 && bishopColLeft >= 0) { 
-						if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.WHITE) {
-							break;
-						}
-						
-						else if (chessBoard[bishopRowUp][bishopColLeft] == chessBoard[rowDest][colDest]) {
+			if(destinationPiece.type != PieceType.KING) {
+				while(bishopRowUp >= 0 && bishopColLeft >= 0) { 
+					if(bishopRowUp == rowDest && bishopColLeft == colDest) {
+						if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							break;
+							
 						}
-						
-						else if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
-							bishopRowUp --;
-							bishopColLeft--;
-						}
-					}
-				}
-			}
-			
-			else {
-				while(bishopRowUp >= 0 && bishopColLeft >= 0) { 
-					if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
-						
-						if(bishopRowUp == rowDest && bishopColLeft == colDest) {
+						else if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColLeft] = selectedPiece;
-							break;
-						}	
-						else {
-							System.out.println("in block");
-							bishopRowUp--;
-							bishopColLeft--;
 						}
-					}
-					else {
 						break;
 					}
+					else if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.WHITE || chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.BLACK) {
+						break;
+					}
+					bishopRowUp--;
+					bishopColLeft--;
 				}
 			}
 		}
 			
 		if(rowDest < row && colDest > col) { //if the move is upper right
-			if(destinationPiece.type != PieceType.NONE) {  
-				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
-					while(bishopRowUp >= 0 && bishopColRight < 8) { 
-						if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.WHITE) {
-							break;
-						}
-						
-						else if (chessBoard[bishopRowUp][bishopColRight] == chessBoard[rowDest][colDest]) {
+			if(destinationPiece.type != PieceType.KING) {
+				while(bishopRowUp >= 0 && bishopColRight < 8) { 
+					if(bishopRowUp == rowDest && bishopColRight == colDest) {
+						if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							break;
+							
 						}
-						
-						else if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
-							bishopRowUp --;
-							bishopColRight++;
-						}
-					}
-				}
-			}
-			
-			else {
-				while(bishopRowUp >= 0 && bishopColRight < 8) { 
-					if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
-						
-						if(bishopRowUp == rowDest && bishopColRight == colDest) {
+						else if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
-							break;
-						}	
-						else {
-							bishopRowUp--;
-							bishopColRight++;
 						}
-					}
-					else {
 						break;
 					}
+					else if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.WHITE || chessBoard[bishopRowUp][bishopColRight].color == PieceColor.BLACK) {
+						break;
+					}
+					bishopRowUp--;
+					bishopColRight++;
 				}
 			}
+		
 		}
 			
 		if(rowDest > row && colDest > col) { //if the move is lower right
-			if(destinationPiece.type != PieceType.NONE) {  
-				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
-					while(bishopRowDown < 8 && bishopColRight < 8) { 
-						if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.WHITE) {
-							break;
-						}
-						
-						else if (chessBoard[bishopRowDown][bishopColRight] == chessBoard[rowDest][colDest]) {
+			if(destinationPiece.type != PieceType.KING) {
+				while(bishopRowDown < 8 && bishopColRight < 8) { 
+					if(bishopRowDown == rowDest && bishopColRight == colDest) {
+						if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							break;
+							
 						}
-						
-						else if(chessBoard[bishopRowDown][bishopColRight].type == PieceType.NONE) {
-							bishopRowUp --;
-							bishopColRight++;
-						}
-					}
-				}
-			}
-			
-			else {
-				while(bishopRowDown < 8 && bishopColRight < 8) { 
-					if(chessBoard[bishopRowDown][bishopColRight].type == PieceType.NONE) {
-						
-						if(bishopRowDown == rowDest && bishopColRight == colDest) {
+						else if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
-							break;
-						}	
-						else {
-							bishopRowDown++;
-							bishopColRight++;
 						}
-					}
-					else {
 						break;
 					}
+					else if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.WHITE || chessBoard[bishopRowUp][bishopColRight].color == PieceColor.BLACK) {
+						break;
+					}
+					bishopRowDown++;
+					bishopColLeft++;
 				}
 			}
 		}
 		
 		if(rowDest > row && colDest < col) { //if the move is lower left
-			if(destinationPiece.type != PieceType.NONE) {  
-				if(destinationPiece.color == PieceColor.BLACK && destinationPiece.type != PieceType.KING) {
-					while(bishopRowDown < 8  && bishopColLeft >= 0) { 
-						if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.WHITE) {
-							break;
-						}
-						
-						else if (chessBoard[bishopRowDown][bishopColLeft] == chessBoard[rowDest][colDest]) {
+			if(destinationPiece.type != PieceType.KING) {
+				while(bishopRowDown < 8 && bishopColLeft >= 0) { 
+					if(bishopRowDown == rowDest && bishopColLeft == colDest) {
+						if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							break;
+							
 						}
-						
-						else if(chessBoard[bishopRowDown][bishopColLeft].type == PieceType.NONE) {
-							bishopRowDown++;
-							bishopColLeft--;
-						}
-					}
-				}
-			}
-			
-			else {
-				while(bishopRowDown < 8 && bishopColLeft >= 0) { 
-					if(chessBoard[bishopRowDown][bishopColLeft].type == PieceType.NONE) {
-						
-						if(bishopRowDown == rowDest && bishopColLeft == colDest) {
+						else if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
-							break;
-						}	
-						else {
-							bishopRowDown++;
-							bishopColLeft--;
 						}
-					}
-					else {
 						break;
 					}
+					else if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.WHITE || chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.BLACK) {
+						break;
+					}
+					bishopRowDown++;
+					bishopColLeft--;
 				}
 			}
 		}
@@ -780,68 +703,59 @@ public class Board implements MouseListener {
 		if(destinationPiece.type != PieceType.KING) {
 			if(rowDest > row) { // down movement 
 				for(int rookDown = row + 1; rookDown < 8; rookDown++) {
-					if(chessBoard[rookDown][col] == chessBoard[rowDest][colDest]) {
-						if(chessBoard[rookDown][col].color == PieceColor.BLACK) {
+					if(rookDown == rowDest && col == colDest) {
+						if(chessBoard[rookDown][col].color == PieceColor.BLACK) { //if taking at dest square
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rookDown][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
-						else {
+						else { // if not taking at dest square
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rookDown][colDest] = selectedPiece;
 						}
 					}
-					else if(chessBoard[rookDown][col].color == PieceColor.WHITE) {
-						break;
-					}
-					else if(chessBoard[rookDown][col].color == PieceColor.BLACK) {
+					else if(chessBoard[rookDown][col].color == PieceColor.WHITE || chessBoard[rookDown][col].color == PieceColor.BLACK) { 
 						break;
 					}
 				}
 			}
 			if(rowDest < row) { // up movement 
 				for(int rookUp = row - 1; rookUp >= 0; rookUp--) {
-					if(chessBoard[rookUp][col] == chessBoard[rowDest][colDest]) {
+					if(rookUp == rowDest && col == colDest) {
 						if(chessBoard[rookUp][col].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rookUp][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
 						else {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rookUp][colDest] = selectedPiece;
 						}
 						break;
 					}
-					else if(chessBoard[rookUp][col].color == PieceColor.WHITE) {
-						break;
-					}
-					else if(chessBoard[rookUp][col].color == PieceColor.BLACK) {
+					else if(chessBoard[rookUp][col].color == PieceColor.WHITE || chessBoard[rookUp][col].color == PieceColor.BLACK) {
 						break;
 					}
 				}
 			}
 			if(colDest > col) {// right movement 
 				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
-					if(chessBoard[row][rookRight] == chessBoard[rowDest][colDest]) {
+					if(row == rowDest && rookRight == colDest) {
 						if(chessBoard[row][rookRight].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rowDest][rookRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
 						else {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rowDest][rookRight] = selectedPiece;
 						}
 						break;
 					}
-					else if(chessBoard[row][rookRight].color == PieceColor.WHITE) {
-						break;
-					}
-					else if(chessBoard[row][rookRight].color == PieceColor.BLACK) {
+					else if(chessBoard[row][rookRight].color == PieceColor.WHITE || chessBoard[row][rookRight].color == PieceColor.BLACK) {
 						break;
 					}
 				}
@@ -849,16 +763,16 @@ public class Board implements MouseListener {
 			
 			if(colDest < col) {// left movement 	
 				for(int rookLeft = col - 1; rookLeft >= 0; rookLeft--) {
-					if(chessBoard[row][rookLeft] == chessBoard[rowDest][colDest]) {
+					if(row == rowDest && rookLeft == colDest) {
 						if(chessBoard[row][rookLeft].color == PieceColor.BLACK) {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rowDest][rookLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
 						else {
 							chessBoard[row][col] = nul;
-							chessBoard[rowDest][colDest] = selectedPiece;
+							chessBoard[rowDest][rookLeft] = selectedPiece;
 						}
 						break;
 					}
