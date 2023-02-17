@@ -88,7 +88,7 @@ public class Board implements MouseListener {
     	for(int row = 0; row < 8; row++) {
     		for(int col = 0; col < 8; col++) {
     			
-    			if(chessBoard[row][col].type != PieceType.NONE) {
+    			if(chessBoard[row][col].color == PieceColor.WHITE) {
     				sightBoard[row][col] = true;
     			}
     			
@@ -98,6 +98,7 @@ public class Board implements MouseListener {
     						sightBoard[rookDown][col] = true;
     					}
     					else {
+    						sightBoard[rookDown][col] = true;
     						break;				
     					}
     				}
@@ -106,8 +107,10 @@ public class Board implements MouseListener {
     					if(chessBoard[row][rookRight].type == PieceType.NONE) {
     						sightBoard[row][rookRight] = true;
     					}
-    					else {
-    						break;				
+    					else {	
+    						
+    						sightBoard[row][rookRight] = true;
+    						break;
     					}
     				}	
     				
@@ -116,6 +119,7 @@ public class Board implements MouseListener {
     						sightBoard[row][rookLeft] = true;
     					}
     					else {
+    						sightBoard[row][rookLeft] = true;
     						break;				
     					}
     				}
@@ -125,6 +129,7 @@ public class Board implements MouseListener {
     						sightBoard[rookUp][col] = true;
     					}
     					else {
+    						sightBoard[rookUp][col] = true;
     						break;				
     					}
     				}
@@ -135,69 +140,44 @@ public class Board implements MouseListener {
     					continue;
     				}
     				if(col == 0) {
-    					if(chessBoard[row - 1][col + 1].type == PieceType.NONE) {
-    						sightBoard[row - 1][col + 1] = true;
-    					}
+    					sightBoard[row - 1][col + 1] = true;
+    					
     				}
     				else if(col == 7) {
-    					if(chessBoard[row - 1][col - 1].type == PieceType.NONE) {
-    						sightBoard[row - 1][col - 1] = true;
-    					}
+    					sightBoard[row - 1][col - 1] = true;
+    					
     				}
     				
     				else {
-    					if(chessBoard[row - 1][col - 1].type == PieceType.NONE) {
-    						sightBoard[row - 1][col - 1] = true;
-    					}
-    					
-    					if(chessBoard[row - 1][col + 1].type == PieceType.NONE) {
-    						sightBoard[row - 1][col + 1] = true;
-    					}
-    					
+    					sightBoard[row - 1][col - 1] = true;
+    					sightBoard[row - 1][col + 1] = true;	
     				}
     			}
     			
     			if(chessBoard[row][col].color == PieceColor.WHITE && chessBoard[row][col].type == PieceType.KNIGHT) {
     				if(col - 1 >= 0 && row - 2 >= 0) {
-    					if(chessBoard[row - 2][col - 1].type == PieceType.NONE) {
-    						sightBoard[row -2][col - 1] = true;
-    					}
+    					sightBoard[row -2][col - 1] = true;
     				}
     				if(col + 1 < 8 && row - 2 >= 0) {
-    					if(chessBoard[row - 2][col + 1].type == PieceType.NONE) {
-    						sightBoard[row -2][col + 1] = true;
-    					}
+    					sightBoard[row -2][col + 1] = true;
     				}
     				if(col + 2 < 8 && row - 1 >= 0) {
-    					if(chessBoard[row - 1][col + 2].type == PieceType.NONE) {
-    						sightBoard[row - 1][col + 2] = true;
-    					}
+    					sightBoard[row - 1][col + 2] = true;
     				}
     				if(col - 2 >= 0 && row - 1 >= 0) {
-    					if(chessBoard[row - 1][col - 2].type == PieceType.NONE) {
-    						sightBoard[row - 1][col - 2] = true;
-    					}
+    					sightBoard[row - 1][col - 2] = true;
     				}
-    				
     				if(col - 2 >= 0 && row + 1 < 8 ) {
-    					if(chessBoard[row + 1][col - 2].type == PieceType.NONE) {
-    						sightBoard[row + 1][col - 2] = true;
-    					}
+    					sightBoard[row + 1][col - 2] = true;
     				}
     				if(col - 1 >= 0 && row + 2 < 8) {
-    					if(chessBoard[row + 2][col - 1].type == PieceType.NONE) {
-    						sightBoard[row + 2][col - 1] = true;
-    					}
-    				}
+    					sightBoard[row + 2][col - 1] = true;
+    				}   				
     				if(col + 1 < 8 && row + 2 < 8) {
-    					if(chessBoard[row + 2][col + 1].type == PieceType.NONE) {
-    						sightBoard[row + 2][col + 1] = true;
-    					}   
+    					sightBoard[row + 2][col + 1] = true;
     				}
     				if(col + 2 < 8 && row + 1 < 8 ) {
-    					if(chessBoard[row + 1][col + 2].type == PieceType.NONE) {
-    						sightBoard[row + 1][col + 2] = true;
-    					}
+    					sightBoard[row + 1][col + 2] = true;
     				}	
     			}
     			if(chessBoard[row][col].color == PieceColor.WHITE && chessBoard[row][col].type == PieceType.BISHOP) {
@@ -215,6 +195,7 @@ public class Board implements MouseListener {
     							//System.out.println("Upper Left Checked");
     					}
     					else {
+    						sightBoard[bishopRowUp][bishopColLeft] = true;
     						break;
     					}
     				}
@@ -222,18 +203,13 @@ public class Board implements MouseListener {
     				bishopRowUp = row - 1;
     				
     				while(bishopRowUp >= 0 && bishopColRight < 8) { //checking upper right diagonal
-    					//System.out.println("in this UR check");
-    					//boardState();
-    					//System.out.println(chessBoard[bishopRowUp][bishopColRight].type);
-    					//System.out.println(bishopRowUp);
-    					//System.out.println(bishopColRight);
     					if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
-    						//System.out.println("Upper Right Checked");
     						sightBoard[bishopRowUp][bishopColRight] = true;
     						bishopRowUp--;
     						bishopColRight++;
     					}
     					else {
+    						sightBoard[bishopRowUp][bishopColRight] = true;
     						break;
     					}
     				}
@@ -248,6 +224,7 @@ public class Board implements MouseListener {
     							//System.out.println("Lower Left Checked");
     					}
     					else {
+    						sightBoard[bishopRowDown][bishopColLeft] = true;
     						break;
     					}
     				}
@@ -262,6 +239,7 @@ public class Board implements MouseListener {
     						bishopColRight++;
     					}
     					else {
+    						sightBoard[bishopRowDown][bishopColRight] = true;
     						break;
     					}
     				}
@@ -283,6 +261,7 @@ public class Board implements MouseListener {
     							queenColLeft--;
     					}
     					else {
+    						sightBoard[queenRowUp][queenColLeft] = true;
     						break;
     					}
     				}
@@ -296,6 +275,7 @@ public class Board implements MouseListener {
     						queenColRight++;
     					}
     					else {
+    						sightBoard[queenRowUp][queenColRight] = true;
     						break;
     					}
     				}
@@ -310,6 +290,7 @@ public class Board implements MouseListener {
     							queenColLeft--;
     					}
     					else {
+    						sightBoard[queenRowDown][queenColLeft] = true;
     						break;
     					}
     				}
@@ -318,12 +299,12 @@ public class Board implements MouseListener {
     				
     				while(queenRowDown < 8 && queenColRight < 8) { //checking lower right
     					if(chessBoard[queenRowDown][queenColRight].type == PieceType.NONE) {
-
     						sightBoard[queenRowDown][queenColRight] = true;
     						queenRowDown++;
     						queenColRight++;
     					}
     					else {
+    						sightBoard[queenRowDown][queenColRight] = true;
     						break;
     					}
     				}
@@ -335,15 +316,17 @@ public class Board implements MouseListener {
     						sightBoard[queenDown][col] = true;
     					}
     					else {
+    						sightBoard[queenDown][col] = true;
     						break;				
     					}
     				}
     				
     				for(int queenRight = col + 1; queenRight < 8; queenRight++) {
     					if(chessBoard[row][queenRight].type == PieceType.NONE) {
-    						sightBoard[queenRight][col] = true;
+    						sightBoard[row][queenRight] = true;
     					}
     					else {
+    						sightBoard[row][queenRight] = true;
     						break;				
     					}
     				}	
@@ -353,6 +336,7 @@ public class Board implements MouseListener {
     						sightBoard[row][queenLeft] = true;
     					}
     					else {
+    						sightBoard[row][queenLeft] = true;
     						break;				
     					}	
     				}
@@ -362,6 +346,7 @@ public class Board implements MouseListener {
     						sightBoard[queenUp][col] = true;
     					}
     					else {
+    						sightBoard[queenUp][col] = true;
     						break;				
     					}
     				}
@@ -374,51 +359,35 @@ public class Board implements MouseListener {
     				int kingLeft = col - 1;
     				
     				if(kingUp >= 0) { //checking space above king, if possible
-    					if(chessBoard[kingUp][col].type == PieceType.NONE) {
-    						sightBoard[kingUp][col] = true;
-    					}
+    					sightBoard[kingUp][col] = true;
     				}
     					
     				if(kingRight < 8) { //checking space to right of king, if possible
-    					if(chessBoard[row][kingRight].type == PieceType.NONE) {
-    						sightBoard[row][kingRight] = true;
-    					}
+    					sightBoard[row][kingRight] = true;
     				}
     					
     				if(kingLeft >= 0) { //checking space to left of king, if possible
-    					if(chessBoard[row][kingLeft].type == PieceType.NONE) {
-    						sightBoard[row][kingLeft] = true;
-    					}
+    					sightBoard[row][kingLeft] = true;
     				}
     				
     				if(kingDown < 8) { //checking space below king, if possible
-    					if(chessBoard[kingDown][col].type == PieceType.NONE) {
-    						sightBoard[kingDown][col] = true;
-    					}
+    					sightBoard[kingDown][col] = true;
     				}
     				
     				if(kingUp >=0 && kingRight < 8) { //checking upper right square, if possible
-    					if(chessBoard[kingUp][kingRight].type == PieceType.NONE) {
-    						sightBoard[kingUp][kingRight] = true;
-    					}
+    					sightBoard[kingUp][kingRight] = true;		
     				}
     					
     				if(kingUp >=0 && kingLeft >= 0) { //checking upper left square, if possible
-    					if(chessBoard[kingUp][kingLeft].type == PieceType.NONE) {
-    						sightBoard[kingUp][kingLeft] = true;
-    					}
+    					sightBoard[kingUp][kingLeft] = true;
     				}	
     				
     				if(kingDown < 8 && kingRight < 8) { //checking lower right square, if possible
-    					if(chessBoard[kingDown][kingRight].type == PieceType.NONE) {
-    						sightBoard[kingDown][kingRight] = true;
-    					}
+    					sightBoard[kingDown][kingRight] = true;	
     				}
     				
     				if(kingDown < 8 && kingLeft >= 0) { //checking lower right square, if possible
-    					if(chessBoard[kingDown][kingLeft].type == PieceType.NONE) {
-    						sightBoard[kingDown][kingLeft] = true;
-    					}
+    					sightBoard[kingDown][kingLeft] = true;
     				}
     			}
     		}
@@ -653,11 +622,11 @@ public class Board implements MouseListener {
 						}
 						break;
 					}
-					else if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.WHITE || chessBoard[bishopRowUp][bishopColRight].color == PieceColor.BLACK) {
+					else if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.WHITE || chessBoard[bishopRowDown][bishopColRight].color == PieceColor.BLACK) {
 						break;
 					}
 					bishopRowDown++;
-					bishopColLeft++;
+					bishopColRight++;
 				}
 			}
 		}
@@ -709,7 +678,10 @@ public class Board implements MouseListener {
 							chessBoard[rookDown][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							}
+						}
+						else if(chessBoard[rookDown][col].color == PieceColor.WHITE) {
+							break;
+						}
 						else { // if not taking at dest square
 							chessBoard[row][col] = nul;
 							chessBoard[rookDown][colDest] = selectedPiece;
@@ -729,6 +701,9 @@ public class Board implements MouseListener {
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
+						else if(chessBoard[rookUp][col].color == PieceColor.WHITE) {
+							break;
+						}
 						else {
 							chessBoard[row][col] = nul;
 							chessBoard[rookUp][colDest] = selectedPiece;
@@ -748,7 +723,10 @@ public class Board implements MouseListener {
 							chessBoard[rowDest][rookRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							}
+						}
+						else if(chessBoard[row][rookRight].color == PieceColor.WHITE) {
+							break;
+						}
 						else {
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookRight] = selectedPiece;
@@ -770,6 +748,9 @@ public class Board implements MouseListener {
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
 							}
+						else if(chessBoard[row][rookLeft].color == PieceColor.WHITE) {
+							break;
+						}
 						else {
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookLeft] = selectedPiece;
@@ -788,7 +769,7 @@ public class Board implements MouseListener {
 		frame.repaint();
 	}
 	
-	public void pawnMove() { // can only move 2 squares (col index - 2) if .hasMoved == false, can only move 1 square (col - 1) unless taking a piece (row index -1, col index +-1)
+	public void pawnMove() { 
 		int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -875,11 +856,11 @@ public class Board implements MouseListener {
 		return;
 	}
 	
-	public boolean kingLogic() {  //may require some form of "looking" system; ie. if queen sees the king on destination square, inCheck boolean == true for seen king.
-		return true;
+	public void kingMove() {  
+		
 	}
 	
-	public void sightState() {
+	public void sightState() { //prints current state of sightBoard
 		for(int row = 0; row < sightBoard.length; row++) {
 		    System.out.println();
 		    for(int col = 0; col < sightBoard[row].length; col++) {
@@ -1117,5 +1098,3 @@ public class Board implements MouseListener {
         }
     }
 }
-
-
