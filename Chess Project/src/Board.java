@@ -79,7 +79,94 @@ public class Board implements MouseListener {
     	}
     }
    
-    public void opposingPieceSight() {
+    public String getFEN() { //returns FEN for current position in game
+    	String FEN = ("");
+    	String rowFEN = ("");
+    	int consecutiveBlanks = 0;
+    	
+    	for(int row = 0; row < 8; row++) {
+    		for(int col = 0; col < 8; col++) {
+    			if(chessBoard[row][col].type == PieceType.NONE) {
+    				consecutiveBlanks ++;
+    				if(col == 7) {
+    					rowFEN += consecutiveBlanks;
+    				}
+    			}
+    			else if(consecutiveBlanks > 0) {
+    				rowFEN += consecutiveBlanks;
+    			}
+    			if(chessBoard[row][col].type == PieceType.PAWN) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "P";
+    				}
+    				else {
+    					rowFEN += "p";	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].type == PieceType.KNIGHT) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "N";
+    				}
+    				else {
+    					rowFEN += "n";	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].type == PieceType.BISHOP) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "B";
+    				}
+    				else {
+    					rowFEN += "b";	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].type == PieceType.ROOK) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "R";
+    				}
+    				else {
+    					rowFEN += "r";	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].type == PieceType.QUEEN) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "P";
+    				}
+    				else {
+    					rowFEN += "p";	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].type == PieceType.KING) {
+    				if(chessBoard[row][col].color == PieceColor.WHITE) {
+    					rowFEN += "K";
+    				}
+    				else {
+    					rowFEN += "k";	
+    				}
+    			}
+    			
+    			if(col == 7) {
+    				consecutiveBlanks = 0;
+    				FEN += rowFEN;
+    				rowFEN = ("");
+    				if(row != 7) {
+    					FEN += "/";
+    				}
+    			}
+    			
+    			
+    		}
+    	}
+    	System.out.println(FEN);
+    	return FEN;
+    }
+	
+	
+	public void opposingPieceSight() {
     	boardFlip();
     	for(int row = 0; row < 8; row++) { //must reset every time to avoid keeping previous sights
     		for(int col = 0; col < 8; col++) {
@@ -1509,6 +1596,7 @@ public class Board implements MouseListener {
 		}
 		
 		board.boardState();
+		board.getFEN();
     }
 	
 	@Override
