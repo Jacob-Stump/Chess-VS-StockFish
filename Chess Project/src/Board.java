@@ -25,6 +25,7 @@ public class Board implements MouseListener {
     private Pieces destinationPiece;
     private int[] destinationPieceLocation;
     public boolean firstmovemade = false;
+    private int moveNumber = 1; //keeps track of current move number mostly for stockfish FEN string
       
     private Image[] pieceImages = new Image[12];
     Turn Turn = new Turn(PieceColor.WHITE);
@@ -161,6 +162,24 @@ public class Board implements MouseListener {
     			
     		}
     	}
+    	FEN += " w ";
+    	if((bK.hasMoved == true || (bR.hasMoved == true && bR2.hasMoved == true)) && (wK.hasMoved == true || (wR.hasMoved == true && wR2.hasMoved == true))) { //if neither side can castle
+    		FEN += "- - ";
+    	}
+    	if(wK.hasMoved == false && wR.hasMoved == false) { //if white can queen side castle
+    		FEN += "Q";
+    	}
+    	if(wK.hasMoved == false && wR2.hasMoved == false) { //if white can king side castle
+    		FEN += "K";
+    	}
+    	if(bK.hasMoved == false && bR.hasMoved == false) { //if white can queen side castle
+    		FEN += "q";
+    	}
+    	if(bK.hasMoved == false && bR2.hasMoved == false) { //if white can king side castle
+    		FEN += "k";
+    	}
+    	FEN += (" 0 " + moveNumber);
+    	
     	System.out.println(FEN);
     	return FEN;
     }
