@@ -14,6 +14,7 @@ public class Board implements MouseListener {
                        
 	private Pieces[][] chessBoard = new Pieces [8][8]; //physical game board
 	private boolean[][] sightBoard = new boolean[8][8];
+	private boolean[][] blackSightBoard = new boolean[8][8];
     private JPanel panel;
     private JFrame frame = new JFrame();
     private int[] position = new int[2]; //returns a pieces location as an array [row, col]
@@ -78,7 +79,329 @@ public class Board implements MouseListener {
     	}
     }
    
-    public void pieceSight() {
+    public void opposingPieceSight() {
+    	boardFlip();
+    	for(int row = 0; row < 8; row++) { //must reset every time to avoid keeping previous sights
+    		for(int col = 0; col < 8; col++) {
+    		blackSightBoard[row][col] = false;	
+    		}
+    	}
+    	
+    	for(int row = 0; row < 8; row++) {
+    		for(int col = 0; col < 8; col++) {
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK) {
+    				blackSightBoard[row][col] = true;
+    			}
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.ROOK ) { //checks for the squares each white rook is looking at for four possible directions
+    				for(int rookDown = row + 1; rookDown < 8; rookDown++) {
+    					if(chessBoard[rookDown][col].type == PieceType.NONE) {
+    						blackSightBoard[rookDown][col] = true;
+    					}
+    					else {
+    						blackSightBoard[rookDown][col] = true;
+    						break;				
+    					}
+    				}
+    				
+    				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
+    					if(chessBoard[row][rookRight].type == PieceType.NONE) {
+    						blackSightBoard[row][rookRight] = true;
+    					}
+    					else {	
+    						
+    						blackSightBoard[row][rookRight] = true;
+    						break;
+    					}
+    				}	
+    				
+    				for(int rookLeft = col - 1; rookLeft >= 0; rookLeft--) {
+    					if(chessBoard[row][rookLeft].type == PieceType.NONE) {
+    						blackSightBoard[row][rookLeft] = true;
+    					}
+    					else {
+    						blackSightBoard[row][rookLeft] = true;
+    						break;				
+    					}
+    				}
+    				
+    				for(int rookUp = row - 1; rookUp >= 0; rookUp--) {
+    					if(chessBoard[rookUp][col].type == PieceType.NONE) {
+    						blackSightBoard[rookUp][col] = true;
+    					}
+    					else {
+    						blackSightBoard[rookUp][col] = true;
+    						break;				
+    					}
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.PAWN ) { //if the current piece in the loop is a white pawn
+    				if(row == 0) { //backlogged for when working on queening a pawn
+    					continue;
+    				}
+    				if(col == 0) {
+    					blackSightBoard[row - 1][col + 1] = true;
+    					
+    				}
+    				else if(col == 7) {
+    					blackSightBoard[row - 1][col - 1] = true;
+    					
+    				}
+    				
+    				else {
+    					blackSightBoard[row - 1][col - 1] = true;
+    					blackSightBoard[row - 1][col + 1] = true;	
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.KNIGHT) {
+    				if(col - 1 >= 0 && row - 2 >= 0) {
+    					blackSightBoard[row -2][col - 1] = true;
+    				}
+    				if(col + 1 < 8 && row - 2 >= 0) {
+    					blackSightBoard[row -2][col + 1] = true;
+    				}
+    				if(col + 2 < 8 && row - 1 >= 0) {
+    					blackSightBoard[row - 1][col + 2] = true;
+    				}
+    				if(col - 2 >= 0 && row - 1 >= 0) {
+    					blackSightBoard[row - 1][col - 2] = true;
+    				}
+    				if(col - 2 >= 0 && row + 1 < 8 ) {
+    					blackSightBoard[row + 1][col - 2] = true;
+    				}
+    				if(col - 1 >= 0 && row + 2 < 8) {
+    					blackSightBoard[row + 2][col - 1] = true;
+    				}   				
+    				if(col + 1 < 8 && row + 2 < 8) {
+    					blackSightBoard[row + 2][col + 1] = true;
+    				}
+    				if(col + 2 < 8 && row + 1 < 8 ) {
+    					blackSightBoard[row + 1][col + 2] = true;
+    				}	
+    			}
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.BISHOP) {
+    				int bishopRowUp = row - 1;
+    				int bishopColLeft = col - 1;
+    				int bishopRowDown = row + 1;
+    				int bishopColRight = col + 1;
+
+    	
+    				while(bishopRowUp >= 0 && bishopColLeft >= 0) { //checking upper left diagonal
+    					if(chessBoard[bishopRowUp][bishopColLeft].type == PieceType.NONE) {
+    						blackSightBoard[bishopRowUp][bishopColLeft] = true;
+    							bishopRowUp--;
+    							bishopColLeft--;
+    							//System.out.println("Upper Left Checked");
+    					}
+    					else {
+    						blackSightBoard[bishopRowUp][bishopColLeft] = true;
+    						break;
+    					}
+    				}
+    				bishopColLeft = col -1;
+    				bishopRowUp = row - 1;
+    				
+    				while(bishopRowUp >= 0 && bishopColRight < 8) { //checking upper right diagonal
+    					if(chessBoard[bishopRowUp][bishopColRight].type == PieceType.NONE) {
+    						blackSightBoard[bishopRowUp][bishopColRight] = true;
+    						bishopRowUp--;
+    						bishopColRight++;
+    					}
+    					else {
+    						blackSightBoard[bishopRowUp][bishopColRight] = true;
+    						break;
+    					}
+    				}
+    				bishopRowUp = row - 1;
+    				bishopColRight = col + 1;
+    				
+    				while(bishopRowDown < 8 && bishopColLeft >= 0) { //checking lower left diagonal
+    					if(chessBoard[bishopRowDown][bishopColLeft].type == PieceType.NONE) {
+    						blackSightBoard[bishopRowDown][bishopColLeft] = true;
+    							bishopRowDown++;
+    							bishopColLeft--;
+    							//System.out.println("Lower Left Checked");
+    					}
+    					else {
+    						blackSightBoard[bishopRowDown][bishopColLeft] = true;
+    						break;
+    					}
+    				}
+    				bishopRowDown = row + 1;
+    				bishopColLeft = col - 1;
+    				
+    				while(bishopRowDown < 8 && bishopColRight < 8) { //checking lower right
+    					if(chessBoard[bishopRowDown][bishopColRight].type == PieceType.NONE) {
+    						//System.out.println("Lower Right Checked");
+    						blackSightBoard[bishopRowDown][bishopColRight] = true;
+    						bishopRowDown++;
+    						bishopColRight++;
+    					}
+    					else {
+    						blackSightBoard[bishopRowDown][bishopColRight] = true;
+    						break;
+    					}
+    				}
+    				bishopRowDown = row + 1;
+    				bishopColRight = col + 1;
+    				
+    			}
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.QUEEN) { //super easy, reusing bishop and rook code
+    				int queenRowUp = row - 1;
+    				int queenColLeft = col - 1;
+    				int queenRowDown = row + 1;
+    				int queenColRight = col + 1;
+    				
+    				while(queenRowUp >= 0 && queenColLeft >= 0) { //checking upper left diagonal
+    					if(chessBoard[queenRowUp][queenColLeft].type == PieceType.NONE) {
+    						blackSightBoard[queenRowUp][queenColLeft] = true;
+    							queenRowUp--;
+    							queenColLeft--;
+    					}
+    					else {
+    						blackSightBoard[queenRowUp][queenColLeft] = true;
+    						break;
+    					}
+    				}
+    				queenRowUp = row - 1;
+    				queenColLeft = col - 1;
+ 
+    				while(queenRowUp >= 0 && queenColRight < 8) { //checking upper right diagonal
+    					if(chessBoard[queenRowUp][queenColRight].type == PieceType.NONE) {
+    						blackSightBoard[queenRowUp][queenColRight] = true;
+    						queenRowUp--;
+    						queenColRight++;
+    					}
+    					else {
+    						blackSightBoard[queenRowUp][queenColRight] = true;
+    						break;
+    					}
+    				}
+    				queenRowUp = row - 1;
+    				queenColRight = col + 1;
+    				
+    				
+    				while(queenRowDown < 8 && queenColLeft >= 0) { //checking lower left diagonal
+    					if(chessBoard[queenRowDown][queenColLeft].type == PieceType.NONE) {
+    						blackSightBoard[queenRowDown][queenColLeft] = true;
+    							queenRowDown++;
+    							queenColLeft--;
+    					}
+    					else {
+    						blackSightBoard[queenRowDown][queenColLeft] = true;
+    						break;
+    					}
+    				}
+    				queenRowDown = row + 1;
+    				queenColLeft = col - 1;
+    				
+    				while(queenRowDown < 8 && queenColRight < 8) { //checking lower right
+    					if(chessBoard[queenRowDown][queenColRight].type == PieceType.NONE) {
+    						blackSightBoard[queenRowDown][queenColRight] = true;
+    						queenRowDown++;
+    						queenColRight++;
+    					}
+    					else {
+    						blackSightBoard[queenRowDown][queenColRight] = true;
+    						break;
+    					}
+    				}
+    				queenRowDown = row + 1;
+    				queenColRight = col + 1;
+    				
+    				for(int queenDown = row + 1; queenDown < 8; queenDown++) {
+    					if(chessBoard[queenDown][col].type == PieceType.NONE) {
+    						blackSightBoard[queenDown][col] = true;
+    					}
+    					else {
+    						blackSightBoard[queenDown][col] = true;
+    						break;				
+    					}
+    				}
+    				
+    				for(int queenRight = col + 1; queenRight < 8; queenRight++) {
+    					if(chessBoard[row][queenRight].type == PieceType.NONE) {
+    						blackSightBoard[row][queenRight] = true;
+    					}
+    					else {
+    						blackSightBoard[row][queenRight] = true;
+    						break;				
+    					}
+    				}	
+    				
+    				for(int queenLeft = col - 1; queenLeft >= 0; queenLeft--) {
+    					if(chessBoard[row][queenLeft].type == PieceType.NONE) {
+    						blackSightBoard[row][queenLeft] = true;
+    					}
+    					else {
+    						blackSightBoard[row][queenLeft] = true;
+    						break;				
+    					}	
+    				}
+    				
+    				for(int queenUp = row - 1; queenUp >= 0; queenUp--) {
+    					if(chessBoard[queenUp][col].type == PieceType.NONE) {
+    						blackSightBoard[queenUp][col] = true;
+    					}
+    					else {
+    						blackSightBoard[queenUp][col] = true;
+    						break;				
+    					}
+    				}
+    			}
+    			
+    			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.KING) {
+    				int kingUp = row - 1;
+    				int kingRight = col + 1;
+    				int kingDown = row + 1;
+    				int kingLeft = col - 1;
+    				
+    				if(kingUp >= 0) { //checking space above king, if possible
+    					blackSightBoard[kingUp][col] = true;
+    				}
+    					
+    				if(kingRight < 8) { //checking space to right of king, if possible
+    					blackSightBoard[row][kingRight] = true;
+    				}
+    					
+    				if(kingLeft >= 0) { //checking space to left of king, if possible
+    					blackSightBoard[row][kingLeft] = true;
+    				}
+    				
+    				if(kingDown < 8) { //checking space below king, if possible
+    					blackSightBoard[kingDown][col] = true;
+    				}
+    				
+    				if(kingUp >=0 && kingRight < 8) { //checking upper right square, if possible
+    					blackSightBoard[kingUp][kingRight] = true;		
+    				}
+    					
+    				if(kingUp >=0 && kingLeft >= 0) { //checking upper left square, if possible
+    					blackSightBoard[kingUp][kingLeft] = true;
+    				}	
+    				
+    				if(kingDown < 8 && kingRight < 8) { //checking lower right square, if possible
+    					blackSightBoard[kingDown][kingRight] = true;	
+    				}
+    				
+    				if(kingDown < 8 && kingLeft >= 0) { //checking lower right square, if possible
+    					blackSightBoard[kingDown][kingLeft] = true;
+    				}
+    			}
+    		}
+    	}
+    	boardFlip();
+    	opposingSightBoardFlip();
+    	blackSightState();
+    	
+    }
+    
+	public void pieceSight() {
+    	
     	for(int row = 0; row < 8; row++) { //must reset every time to avoid keeping previous sights
     		for(int col = 0; col < 8; col++) {
     		sightBoard[row][col] = false;	
@@ -357,6 +680,7 @@ public class Board implements MouseListener {
     				int kingRight = col + 1;
     				int kingDown = row + 1;
     				int kingLeft = col - 1;
+    					
     				
     				if(kingUp >= 0) { //checking space above king, if possible
     					sightBoard[kingUp][col] = true;
@@ -393,6 +717,7 @@ public class Board implements MouseListener {
     		}
     	}
     	sightState();
+    	
     }
 	
     public int[] getPosition(Pieces p) {
@@ -427,18 +752,25 @@ public class Board implements MouseListener {
     	}
     }
     
-    public void turnFlip() {
+    public void opposingSightBoardFlip() {
+		for(int i = 0; i < (blackSightBoard.length / 2); i++) {
+	        boolean[] temp = blackSightBoard[i];
+	        blackSightBoard[i] = blackSightBoard[blackSightBoard.length - i - 1];
+	        blackSightBoard[blackSightBoard.length - i - 1] = temp;
+		}
+	}
+  
+    public void boardFlip() {
 		for(int i = 0; i < (chessBoard.length / 2); i++) {
 	        Pieces[] temp = chessBoard[i];
 	        chessBoard[i] = chessBoard[chessBoard.length - i - 1];
 	        chessBoard[chessBoard.length - i - 1] = temp;
 		}
-		boardState();
 	}
     
     public void endTurn() {
     	
-    	turnFlip();
+    	boardFlip();
     }
     
     
@@ -674,7 +1006,8 @@ public class Board implements MouseListener {
 				for(int rookDown = row + 1; rookDown < 8; rookDown++) {
 					if(rookDown == rowDest && col == colDest) {
 						if(chessBoard[rookDown][col].color == PieceColor.BLACK) { //if taking at dest square
-							chessBoard[row][col] = nul;
+							selectedPiece.hasMoved = true;
+							chessBoard[row][col] = nul;	
 							chessBoard[rookDown][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
@@ -683,6 +1016,7 @@ public class Board implements MouseListener {
 							break;
 						}
 						else { // if not taking at dest square
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookDown][colDest] = selectedPiece;
 						}
@@ -696,6 +1030,7 @@ public class Board implements MouseListener {
 				for(int rookUp = row - 1; rookUp >= 0; rookUp--) {
 					if(rookUp == rowDest && col == colDest) {
 						if(chessBoard[rookUp][col].color == PieceColor.BLACK) {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookUp][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
@@ -705,6 +1040,7 @@ public class Board implements MouseListener {
 							break;
 						}
 						else {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookUp][colDest] = selectedPiece;
 						}
@@ -719,6 +1055,7 @@ public class Board implements MouseListener {
 				for(int rookRight = col + 1; rookRight < 8; rookRight++) {
 					if(row == rowDest && rookRight == colDest) {
 						if(chessBoard[row][rookRight].color == PieceColor.BLACK) {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
@@ -728,6 +1065,7 @@ public class Board implements MouseListener {
 							break;
 						}
 						else {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookRight] = selectedPiece;
 						}
@@ -743,6 +1081,7 @@ public class Board implements MouseListener {
 				for(int rookLeft = col - 1; rookLeft >= 0; rookLeft--) {
 					if(row == rowDest && rookLeft == colDest) {
 						if(chessBoard[row][rookLeft].color == PieceColor.BLACK) {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
@@ -752,6 +1091,7 @@ public class Board implements MouseListener {
 							break;
 						}
 						else {
+							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookLeft] = selectedPiece;
 						}
@@ -857,7 +1197,149 @@ public class Board implements MouseListener {
 	}
 	
 	public void kingMove() {  
+		int row = selectedPieceLocation[0];
+		int col = selectedPieceLocation[1];
+		int rowDest = destinationPieceLocation[0];
+		int colDest = destinationPieceLocation[1];
+		opposingPieceSight();
 		
+		if(blackSightBoard[rowDest][colDest] == false && destinationPiece.color != PieceColor.WHITE && destinationPiece.type != PieceType.KING) {
+			if(row >= 0 && rowDest == row - 1 && colDest == col) { //king move up
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { 
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(row < 8 && rowDest == row + 1 && colDest == col) { //king move down
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(col < 8 && rowDest == row && colDest == col + 1) { //king move right
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(col >= 0 && rowDest == row && colDest == col - 1) { //king move left
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(row >= 0 && col < 8 && rowDest == row - 1 && colDest == col + 1) { //king move upper right
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(row >= 0 && col >= 0 && rowDest == row - 1 && colDest == col - 1) { //king move upper left
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(row < 8 && col < 8 && rowDest == row + 1 && colDest == col + 1) { //king move lower right
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			if(row < 8 && col >= 0 && rowDest == row + 1 && colDest == col - 1) { //king move lower left
+				if(chessBoard[rowDest][colDest].color == PieceColor.BLACK) { //for taking
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+					int index = pieceBox.indexOf(destinationPiece); 
+					pieceBox.remove(index); 
+				}
+				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
+					selectedPiece.hasMoved = true;
+					chessBoard[row][col] = nul;
+					chessBoard[rowDest][colDest] = selectedPiece;
+				}
+			}
+			
+		}
+		if(destinationPiece.type == PieceType.NONE && rowDest == 7 && colDest == 6 && wR2.hasMoved == false && wK.hasMoved == false) {
+			if(chessBoard[row][col + 1].type == PieceType.NONE && blackSightBoard[row][col+1] == false) {
+				selectedPiece.hasMoved = true;
+				wR2.hasMoved = true;
+				chessBoard[row][col] = nul;
+				chessBoard[rowDest][colDest] = selectedPiece;
+				chessBoard[7][7] = nul;
+				chessBoard[7][5] = wR2;
+			}
+		}
+		if(destinationPiece.type == PieceType.NONE && rowDest == 7 && colDest == 2 && wR.hasMoved == false && wK.hasMoved == false) {
+			if(chessBoard[row][col - 1].type == PieceType.NONE && blackSightBoard[row][col - 1] == false && chessBoard[row][col - 2].type == PieceType.NONE && blackSightBoard[row][col - 2] == false) {
+				selectedPiece.hasMoved = true;
+				wR2.hasMoved = true;
+				chessBoard[row][col] = nul;
+				chessBoard[rowDest][colDest] = selectedPiece;
+				chessBoard[7][0] = nul;
+				chessBoard[7][3] = wR;
+			}
+		}
+		boardState();
+		frame.repaint();
 	}
 	
 	public void sightState() { //prints current state of sightBoard
@@ -865,6 +1347,20 @@ public class Board implements MouseListener {
 		    System.out.println();
 		    for(int col = 0; col < sightBoard[row].length; col++) {
 		    	if(sightBoard[row][col] == true) {
+		    		System.out.print(" T ");
+		    	}
+		    	else {
+		    		System.out.print(" F ");
+		    	}
+		    }
+		}
+	}
+	
+	public void blackSightState() { //prints current state of blackSightBoard
+		for(int row = 0; row < blackSightBoard.length; row++) {
+		    System.out.println();
+		    for(int col = 0; col < blackSightBoard[row].length; col++) {
+		    	if(blackSightBoard[row][col] == true) {
 		    		System.out.print(" T ");
 		    	}
 		    	else {
@@ -1012,7 +1508,6 @@ public class Board implements MouseListener {
 		}
 		
 		board.boardState();
-		board.pieceSight();
     }
 	
 	@Override
@@ -1071,6 +1566,9 @@ public class Board implements MouseListener {
 			bishopMove();
 		}
 		
+		else if(selectedPiece.type == PieceType.KING) {
+			kingMove();
+		}
 		
 	}
 	@Override
