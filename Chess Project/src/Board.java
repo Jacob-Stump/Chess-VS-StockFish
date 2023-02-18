@@ -91,7 +91,7 @@ public class Board implements MouseListener {
     		for(int col = 0; col < 8; col++) {
     			
     			if(chessBoard[row][col].color == PieceColor.BLACK) {
-    				blackSightBoard[row][col] = true;
+    				blackSightBoard[row][col] = false;
     			}
     			
     			if(chessBoard[row][col].color == PieceColor.BLACK && chessBoard[row][col].type == PieceType.ROOK ) { //checks for the squares each white rook is looking at for four possible directions
@@ -1202,6 +1202,7 @@ public class Board implements MouseListener {
 		int rowDest = destinationPieceLocation[0];
 		int colDest = destinationPieceLocation[1];
 		opposingPieceSight();
+		pieceSight();
 		
 		if(blackSightBoard[rowDest][colDest] == false && destinationPiece.color != PieceColor.WHITE && destinationPiece.type != PieceType.KING) {
 			if(row >= 0 && rowDest == row - 1 && colDest == col) { //king move up
