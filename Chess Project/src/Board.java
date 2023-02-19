@@ -25,7 +25,7 @@ public class Board implements MouseListener {
     private Pieces destinationPiece;
     private int[] destinationPieceLocation;
     public boolean firstmovemade = false;
-    private int moveNumber = 1; //keeps track of current move number mostly for stockfish FEN string
+    private int moveNumber = 1; //keeps track of current move number for stockfish FEN string
       
     private Image[] pieceImages = new Image[12];
     Turn Turn = new Turn(PieceColor.WHITE);
@@ -68,6 +68,16 @@ public class Board implements MouseListener {
 	Pieces bP8 = new Pieces(" bP ", PieceColor.BLACK, PieceType.PAWN);
     
  
+	public String getBestMove() {
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
 	
 	public void getPieceImages() throws IOException {
     	BufferedImage bf = ImageIO.read(new File("C:\\Users\\Stump\\Desktop\\chess.png"));
@@ -1449,7 +1459,7 @@ public class Board implements MouseListener {
 		frame.repaint();
 	}
 	
-	public void sightState() { //prints current state of sightBoard
+	public void sightState() { //prints current state of the players piece sights
 		for(int row = 0; row < sightBoard.length; row++) {
 		    System.out.println();
 		    for(int col = 0; col < sightBoard[row].length; col++) {
@@ -1463,7 +1473,7 @@ public class Board implements MouseListener {
 		}
 	}
 	
-	public void blackSightState() { //prints current state of blackSightBoard
+	public void blackSightState() { //prints current state of stockfish's piece sight
 		for(int row = 0; row < blackSightBoard.length; row++) {
 		    System.out.println();
 		    for(int col = 0; col < blackSightBoard[row].length; col++) {
