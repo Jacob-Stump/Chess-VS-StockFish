@@ -71,14 +71,7 @@ public class Board implements MouseListener {
 	public String getBestMove() {
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public void getPieceImages() throws IOException {
     	BufferedImage bf = ImageIO.read(new File("C:\\Users\\Stump\\Desktop\\chess.png"));
     	int i = 0;
