@@ -161,8 +161,6 @@ public class Board implements MouseListener {
     					FEN += "/";
     				}
     			}
-    			
-    			
     		}
     	}
     	FEN += " w ";
