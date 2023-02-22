@@ -73,7 +73,7 @@ public class Board implements MouseListener {
 	}
 
 	public void getPieceImages() throws IOException {
-    	BufferedImage bf = ImageIO.read(new File("C:\\Users\\Stump\\Desktop\\chess.png"));
+    	BufferedImage bf = ImageIO.read(new File("chess.png"));
     	int i = 0;
     	for(int row = 0; row < 400; row+= 200) {
     		for(int col = 0; col < 1200; col+= 200) {
@@ -137,10 +137,10 @@ public class Board implements MouseListener {
     			
     			if(chessBoard[row][col].type == PieceType.QUEEN) {
     				if(chessBoard[row][col].color == PieceColor.WHITE) {
-    					rowFEN += "P";
+    					rowFEN += "Q";
     				}
     				else {
-    					rowFEN += "p";	
+    					rowFEN += "q";	
     				}
     			}
     			
@@ -1617,10 +1617,14 @@ public class Board implements MouseListener {
 		
 		board.boardState();
 		board.getFEN();
+		Stockfish sf = new Stockfish();
+		sf.startEngine();
+		sf.newGame();
+		
     }
 	
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e) { //grabbing piece and piece position from square that mouse is clicked
 
 		selectedPiece = getPiece(e.getY()/64, e.getX()/64);
 			
@@ -1634,7 +1638,7 @@ public class Board implements MouseListener {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(MouseEvent e) { //grabbing piece and piece position from square that mouse is clicked
 		
 		if(!(e.getX() <frame.getContentPane().getWidth() && e.getX() > 0)) //prevents piece placement outside of the JFrame bounds
         {
@@ -1646,11 +1650,11 @@ public class Board implements MouseListener {
             return;
         }
 		
-		int[] dest = {e.getY()/64, e.getX()/64};
+		int[] dest = {e.getY()/64, e.getX()/64}; //grabbing square coords from release 
 		System.out.println("dest" + Arrays.toString(dest));
 		
-		destinationPiece = (getPiece(e.getY()/64, e.getX()/64));
-		destinationPieceLocation = dest;
+		destinationPiece = (getPiece(e.getY()/64, e.getX()/64)); //getting the piece at the release coords
+		destinationPieceLocation = dest; //
 		System.out.println(Arrays.toString(destinationPieceLocation));
 		System.out.println(destinationPiece);
 		

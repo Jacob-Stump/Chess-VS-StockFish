@@ -14,16 +14,20 @@ public class Stockfish { //wrapper class for stockfish engine
 		try {
 			engineProcess = Runtime.getRuntime().exec(PATH);
 			engineReader = new BufferedReader(new InputStreamReader(engineProcess.getInputStream()));
+			engineWriter = new OutputStreamWriter(engineProcess.getOutputStream());
 		} 
 		catch (Exception e) {
+			System.out.println("sorry there was an error");
 			return false;
 		}
+		System.out.println("nice, game started");
 		return true;
 	}
 	
 	public void newGame() {
 		try {
 			engineWriter.write("ucinewgame\n");
+			System.out.println("new game started");
 			engineWriter.flush();
 		} 
 		catch (Exception e) {
@@ -31,7 +35,6 @@ public class Stockfish { //wrapper class for stockfish engine
 		}
 		System.out.println("Succesfully started new game");
 	}
-	
 	
 	public void sendCommand(String cmd) {
 		try {
@@ -41,7 +44,6 @@ public class Stockfish { //wrapper class for stockfish engine
 			e.printStackTrace();
 		}
 	}
-	
 	
 	public static void main(String[] args) {
 		
