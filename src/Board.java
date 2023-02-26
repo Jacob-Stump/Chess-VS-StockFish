@@ -15,6 +15,7 @@ public class Board implements MouseListener {
 	public String lastMove;
 	public int[] stockFishPieceSelect = new int [2];
 	public int[]stockFishDestinationSelect = new int [2];
+	public boolean validMove = false;
 	
 	public String FEN;
 	private Pieces[][] chessBoard = new Pieces [8][8]; //physical game board
@@ -321,33 +322,28 @@ public class Board implements MouseListener {
 			chessBoard[sfSelectRow][sfSelectCol] = nul;
 			chessBoard[sfDestRow][sfDestCol] = sfSelect;
 		}
-		
-		
+		frame.repaint();
 	}
-	
-	
-	
+
 	public void getFEN() { //returns FEN for current position in game
     	FEN = ("");
     	String rowFEN = ("");
     	int consecutiveBlanks = 0;
     	
-    	for(int row = 0; row < 8; row++) {
+    	 for(int row = 0; row < 8; row++) {
     		for(int col = 0; col < 8; col++) {
     			if(chessBoard[row][col].type == PieceType.NONE) {
     				consecutiveBlanks ++;
-    				if(col == 7) {
-    					rowFEN += consecutiveBlanks;
-    				}
     			}
-    			else if(consecutiveBlanks > 0) {
+    			else if(consecutiveBlanks > 0 && col < 8) {
     				rowFEN += consecutiveBlanks;
+    				consecutiveBlanks = 0;
     			}
     			if(chessBoard[row][col].type == PieceType.PAWN) {
     				if(chessBoard[row][col].color == PieceColor.WHITE) {
     					rowFEN += "P";
     				}
-    				else {
+    				else if(chessBoard[row][col].color == PieceColor.BLACK) {
     					rowFEN += "p";	
     				}
     			}
@@ -398,6 +394,10 @@ public class Board implements MouseListener {
     			}
     			
     			if(col == 7) {
+    				if(consecutiveBlanks != 0) {
+    				rowFEN += consecutiveBlanks;
+    				}
+    				
     				consecutiveBlanks = 0;
     				FEN += rowFEN;
     				rowFEN = ("");
@@ -425,12 +425,8 @@ public class Board implements MouseListener {
     		FEN += "q";
     	}
     	
-    	FEN += " " + lastMove;
-    	
     	FEN += (" 0 " + moveNumber);
-    	
-    	//System.out.println(FEN);
-		sf.position(FEN);
+    	FEN += " move e2e4";
     }
 	
 	
@@ -1116,10 +1112,13 @@ public class Board implements MouseListener {
 	}
     
     public void opponentTurn() {
+    	frame.repaint();
     	arrayToMove();
     	getFEN();
+    	sf.position(FEN);
     	sf.go();
-    	
+    	stockFishMove();
+    	moveNumber++;
     }
     
     
@@ -1368,6 +1367,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookDown][colDest] = selectedPiece;
+							validMove = true;
 						}
 					}
 					else if(chessBoard[rookDown][col].color == PieceColor.WHITE || chessBoard[rookDown][col].color == PieceColor.BLACK) { 
@@ -1392,6 +1392,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookUp][colDest] = selectedPiece;
+							validMove = true;
 						}
 						break;
 					}
@@ -1417,6 +1418,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookRight] = selectedPiece;
+							validMove = true;
 						}
 						break;
 					}
@@ -1443,6 +1445,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookLeft] = selectedPiece;
+							validMove = true;
 						}
 						break;
 					}
@@ -1451,11 +1454,14 @@ public class Board implements MouseListener {
 					}
 				}
 			}
+			frame.repaint();
 		}
 		
 		boardState();
 		pieceSight();
-		frame.repaint();
+		if (validMove == true) {
+			opponentTurn();
+		}
 	}
 	
 	public void pawnMove() { 
@@ -1503,9 +1509,8 @@ public class Board implements MouseListener {
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul; //places the empty destination square where the pawn is
 					chessBoard[rowDest][colDest] = selectedPiece;//places the pawn where the destination square is 
-					//boardState();
-					
-
+					validMove = true;
+					frame.repaint();
 					
 				}	
 				if(rowDest == row - 2 && colDest == col && selectedPiece.hasMoved == false) {
@@ -1513,6 +1518,7 @@ public class Board implements MouseListener {
 						selectedPiece.hasMoved = true;
 						chessBoard[row][col] = nul;
 						chessBoard[rowDest][colDest] = selectedPiece;
+						validMove = true;
 					}
 				}
 				
@@ -1541,11 +1547,11 @@ public class Board implements MouseListener {
 				}
 			}
 			
-			frame.repaint();
 		}
 		pieceSight();
-		opponentTurn();
-		stockFishMove();
+		if (validMove == true) {
+			opponentTurn();
+		}
 		return;
 	}
 	
@@ -1869,7 +1875,7 @@ public class Board implements MouseListener {
 	
 	@Override
 	public void mousePressed(MouseEvent e) { //grabbing piece and piece position from square that mouse is clicked
-
+		
 		selectedPiece = getPiece(e.getY()/64, e.getX()/64);
 			
 		if(selectedPiece.type == PieceType.NONE) {
@@ -1879,6 +1885,7 @@ public class Board implements MouseListener {
 		selectedPieceLocation = getPosition(selectedPiece);
 		System.out.println(Arrays.toString(selectedPieceLocation));
 		System.out.println(selectedPiece); 
+		validMove = false;
 	}
 
 	@Override

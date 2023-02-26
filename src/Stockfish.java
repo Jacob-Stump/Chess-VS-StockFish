@@ -10,7 +10,6 @@ public class Stockfish { //wrapper class for stockfish engine
 	private BufferedReader engineReader; // reads command from java 
 	private OutputStreamWriter engineWriter; // writes output from stockfish engine 
 	private final String PATH = "C:\\Users\\Stump\\Desktop\\Research Project\\stockfish\\stockfish.exe";
-	private ProcessBuilder builder;
 	public String output;
 
 	public boolean startEngine() {
@@ -42,6 +41,8 @@ public class Stockfish { //wrapper class for stockfish engine
 	public void go() {
 		try {
 			engineWriter.write("go\n");
+			engineWriter.flush();
+			engineProcess.waitFor(500, TimeUnit.MILLISECONDS);
 			engineWriter.write("stop\n");
 			engineWriter.flush();
 			
@@ -51,6 +52,7 @@ public class Stockfish { //wrapper class for stockfish engine
 					output = line;
 					break;
 				}
+				System.out.println(line);
 			}
 			System.out.println(output);
 			
@@ -78,22 +80,13 @@ public class Stockfish { //wrapper class for stockfish engine
 	
 	public void newGame() {
 		try {
-			engineWriter.write("ucinewgame");
+			engineWriter.write("ucinewgame\\n");
 			engineWriter.flush();
 		} 
 		catch (Exception e) {
 			System.out.println("Something went wrong");
 		}
 		System.out.println("Succesfully started new game");
-	}
-	
-	public void sendCommand(String cmd) {
-		try {
-			engineWriter.write(cmd + "\n");
-			engineWriter.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public static void main(String[] args) {
