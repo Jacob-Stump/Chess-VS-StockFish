@@ -12,6 +12,11 @@ import java.io.*;
 
 public class Board implements MouseListener {
                        
+	public String lastMove;
+	public int[] stockFishPieceSelect = new int [2];
+	public int[]stockFishDestinationSelect = new int [2];
+	
+	public String FEN;
 	private Pieces[][] chessBoard = new Pieces [8][8]; //physical game board
 	private boolean[][] sightBoard = new boolean[8][8];
 	private boolean[][] blackSightBoard = new boolean[8][8];
@@ -26,6 +31,7 @@ public class Board implements MouseListener {
     private int[] destinationPieceLocation;
     public boolean firstmovemade = false;
     private int moveNumber = 1; //keeps track of current move number for stockfish FEN string
+    private Stockfish sf = new Stockfish();
       
     private Image[] pieceImages = new Image[12];
     Turn Turn = new Turn(PieceColor.WHITE);
@@ -68,10 +74,225 @@ public class Board implements MouseListener {
 	Pieces bP8 = new Pieces(" bP ", PieceColor.BLACK, PieceType.PAWN);
     
  
-	public String getBestMove() {
-		return null;
+	public void arrayToMove() {
+		 lastMove = "";
+		int rowSelected = selectedPieceLocation[0];
+		int colSelected = selectedPieceLocation[1];
+		int rowDest = destinationPieceLocation[0];
+		int colDest = destinationPieceLocation[1];
+		
+		if(colSelected == 0) {
+			lastMove += "a";
+		}
+		else if (colSelected == 1) {
+			lastMove += "b";
+		}
+		else if (colSelected == 2) {
+			lastMove += "c";
+		}
+		else if (colSelected == 3) {
+			lastMove += "d";
+		}
+		else if (colSelected == 4) {
+			lastMove += "e";
+		}
+		else if (colSelected == 5) {
+			lastMove += "f";
+		}
+		else if (colSelected == 6) {
+			lastMove += "g";
+		}
+		else if (colSelected == 7) {
+			lastMove += "h";
+		}
+		if(rowSelected == 0) {
+			lastMove += "8";
+		}
+		else if (rowSelected == 1) {
+			lastMove += "7";
+		}
+		else if (rowSelected == 2) {
+			lastMove += "6";
+		}
+		else if (rowSelected == 3) {
+			lastMove += "5";
+		}
+		else if (rowSelected == 4) {
+			lastMove += "4";
+		}
+		else if (rowSelected == 5) {
+			lastMove += "3";
+		}
+		else if (rowSelected == 6) {
+			lastMove += "2";
+		}
+		else if (rowSelected == 7) {
+			lastMove += "1";
+		}
+		
+		if(colDest == 0) {
+			lastMove += "a";
+		}
+		else if (colDest == 1) {
+			lastMove += "b";
+		}
+		else if (colDest == 2) {
+			lastMove += "c";
+		}
+		else if (colDest == 3) {
+			lastMove += "d";
+		}
+		else if (colDest == 4) {
+			lastMove += "e";
+		}
+		else if (colDest == 5) {
+			lastMove += "f";
+		}
+		else if (colDest == 6) {
+			lastMove += "g";
+		}
+		else if (colDest == 7) {
+			lastMove += "h";
+		}
+		
+		if(rowDest == 0) {
+			lastMove += "8";
+		}
+		else if (rowDest == 1) {
+			lastMove += "7";
+		}
+		else if (rowDest == 2) {
+			lastMove += "6";
+		}
+		else if (rowDest == 3) {
+			lastMove += "5";
+		}
+		else if (rowDest == 4) {
+			lastMove += "4";
+		}
+		else if (rowDest == 5) {
+			lastMove += "3";
+		}
+		else if (rowDest == 6) {
+			lastMove += "2";
+		}
+		else if (rowDest == 7) {
+			lastMove += "1";
+		}
+		
+		
+
 	}
 
+	public void moveToArray(String move) {
+		for(int i = 0; i < move.length(); i++) {
+			if (i == 0) {
+				if(move.charAt(i) == 'a') {
+					stockFishPieceSelect[1] = 0;
+				}
+				else if(move.charAt(i) == 'b') {
+					stockFishPieceSelect[1] = 1;
+				}
+				else if(move.charAt(i) == 'c') {
+					stockFishPieceSelect[1] = 2;
+				}
+				else if(move.charAt(i) == 'd') {
+					stockFishPieceSelect[1] = 3;
+				}
+				else if(move.charAt(i) == 'e') {
+					stockFishPieceSelect[1] = 4;
+				}
+				else if(move.charAt(i) == 'f') {
+					stockFishPieceSelect[1] = 5;
+				}
+				else if(move.charAt(i) == 'g') {
+					stockFishPieceSelect[1] = 6;
+				}
+				else if(move.charAt(i) == 'h') {
+					stockFishPieceSelect[1] = 7;
+				}
+			}
+			else if(i == 1) {
+				if(move.charAt(i) == '1') {
+					stockFishPieceSelect[0] = 7;
+				}
+				else if(move.charAt(i) == '2') {
+					stockFishPieceSelect[0] = 6;
+				}
+				else if(move.charAt(i) == '3') {
+					stockFishPieceSelect[0] = 5;
+				}
+				else if(move.charAt(i) == '4') {
+					stockFishPieceSelect[0] = 4;
+				}
+				else if(move.charAt(i) == '5') {
+					stockFishPieceSelect[0] = 3;
+				}
+				else if(move.charAt(i) == '6') {
+					stockFishPieceSelect[0] = 2;
+				}
+				else if(move.charAt(i) == '7') {
+					stockFishPieceSelect[0] = 1;
+				}
+				else if(move.charAt(i) == '8') {
+					stockFishPieceSelect[0] = 0;
+				}
+			}
+			else if(i == 2) {
+				if(move.charAt(i) == 'a') {
+					stockFishDestinationSelect[1] = 0;
+				}
+				else if(move.charAt(i) == 'b') {
+					stockFishDestinationSelect[1] = 1;
+				}
+				else if(move.charAt(i) == 'c') {
+					stockFishDestinationSelect[1] = 2;
+				}
+				else if(move.charAt(i) == 'd') {
+					stockFishDestinationSelect[1] = 3;
+				}
+				else if(move.charAt(i) == 'e') {
+					stockFishDestinationSelect[1] = 4;
+				}
+				else if(move.charAt(i) == 'f') {
+					stockFishDestinationSelect[1] = 5;
+				}
+				else if(move.charAt(i) == 'g') {
+					stockFishDestinationSelect[1] = 6;
+				}
+				else if(move.charAt(i) == 'h') {
+					stockFishDestinationSelect[1] = 7;
+				}
+			}
+			else if(i == 3) {
+				if(move.charAt(i) == '1') {
+					stockFishDestinationSelect[0] = 7;
+				}
+				else if(move.charAt(i) == '2') {
+					stockFishDestinationSelect[0] = 6;
+				}
+				else if(move.charAt(i) == '3') {
+					stockFishDestinationSelect[0] = 5;
+				}
+				else if(move.charAt(i) == '4') {
+					stockFishDestinationSelect[0] = 4;
+				}
+				else if(move.charAt(i) == '5') {
+					stockFishDestinationSelect[0] = 3;
+				}
+				else if(move.charAt(i) == '6') {
+					stockFishDestinationSelect[0] = 2;
+				}
+				else if(move.charAt(i) == '7') {
+					stockFishDestinationSelect[0] = 1;
+				}
+				else if(move.charAt(i) == '8') {
+					stockFishDestinationSelect[0] = 0;
+				}
+			}
+		}
+		
+	}
 	public void getPieceImages() throws IOException {
     	BufferedImage bf = ImageIO.read(new File("chess.png"));
     	int i = 0;
@@ -83,8 +304,31 @@ public class Board implements MouseListener {
     	}
     }
    
-    public String getFEN() { //returns FEN for current position in game
-    	String FEN = ("");
+    
+	public void stockFishMove() {
+		String output = sf.output;
+		String concOutput = output.replace("bestmove ", "");
+		System.out.println(concOutput);
+		moveToArray(concOutput);
+		int sfSelectRow = stockFishPieceSelect[0];
+		int sfSelectCol = stockFishPieceSelect[1];
+		int sfDestRow = stockFishDestinationSelect[0];
+		int sfDestCol = stockFishDestinationSelect[1];
+		Pieces sfSelect = getPiece(sfSelectRow, sfSelectCol);
+		Pieces sfDest = getPiece(sfDestRow, sfDestCol);
+		
+		if(chessBoard[sfDestRow][sfDestCol].type == PieceType.NONE) {
+			chessBoard[sfSelectRow][sfSelectCol] = nul;
+			chessBoard[sfDestRow][sfDestCol] = sfSelect;
+		}
+		
+		
+	}
+	
+	
+	
+	public void getFEN() { //returns FEN for current position in game
+    	FEN = ("");
     	String rowFEN = ("");
     	int consecutiveBlanks = 0;
     	
@@ -163,26 +407,30 @@ public class Board implements MouseListener {
     			}
     		}
     	}
-    	FEN += " w ";
+    	FEN += " b ";
     	if((bK.hasMoved == true || (bR.hasMoved == true && bR2.hasMoved == true)) && (wK.hasMoved == true || (wR.hasMoved == true && wR2.hasMoved == true))) { //if neither side can castle
     		FEN += "- - ";
-    	}
-    	if(wK.hasMoved == false && wR.hasMoved == false) { //if white can queen side castle
-    		FEN += "Q";
     	}
     	if(wK.hasMoved == false && wR2.hasMoved == false) { //if white can king side castle
     		FEN += "K";
     	}
-    	if(bK.hasMoved == false && bR.hasMoved == false) { //if white can queen side castle
-    		FEN += "q";
+    	if(wK.hasMoved == false && wR.hasMoved == false) { //if white can queen side castle
+    		FEN += "Q";
     	}
     	if(bK.hasMoved == false && bR2.hasMoved == false) { //if white can king side castle
     		FEN += "k";
     	}
+    	
+    	if(bK.hasMoved == false && bR.hasMoved == false) { //if white can queen side castle
+    		FEN += "q";
+    	}
+    	
+    	FEN += " " + lastMove;
+    	
     	FEN += (" 0 " + moveNumber);
     	
-    	System.out.println(FEN);
-    	return FEN;
+    	//System.out.println(FEN);
+		sf.position(FEN);
     }
 	
 	
@@ -850,14 +1098,6 @@ public class Board implements MouseListener {
     	return null;
     }
     
-    public void turnChange() {
-    	if(whiteTurn == true) {
-    		Turn.turnColor = PieceColor.BLACK;
-    	}
-    	else {
-    		Turn.turnColor = PieceColor.WHITE;
-    	}
-    }
     
     public void opposingSightBoardFlip() {
 		for(int i = 0; i < (blackSightBoard.length / 2); i++) {
@@ -875,9 +1115,11 @@ public class Board implements MouseListener {
 		}
 	}
     
-    public void endTurn() {
+    public void opponentTurn() {
+    	arrayToMove();
+    	getFEN();
+    	sf.go();
     	
-    	boardFlip();
     }
     
     
@@ -1273,6 +1515,8 @@ public class Board implements MouseListener {
 						chessBoard[rowDest][colDest] = selectedPiece;
 					}
 				}
+				
+				
 			}
 			
 			if(rowDest != 0) {
@@ -1300,6 +1544,8 @@ public class Board implements MouseListener {
 			frame.repaint();
 		}
 		pieceSight();
+		opponentTurn();
+		stockFishMove();
 		return;
 	}
 	
@@ -1616,10 +1862,8 @@ public class Board implements MouseListener {
 		}
 		
 		board.boardState();
-		board.getFEN();
-		Stockfish sf = new Stockfish();
-		sf.startEngine();
-		sf.newGame();
+		board.sf.startEngine();
+		board.sf.isReady();
 		
     }
 	
@@ -1628,7 +1872,7 @@ public class Board implements MouseListener {
 
 		selectedPiece = getPiece(e.getY()/64, e.getX()/64);
 			
-		if(selectedPiece.type == PieceType.NONE || selectedPiece.color != Turn.turnColor) {
+		if(selectedPiece.type == PieceType.NONE) {
 			return;
 		}
 		
