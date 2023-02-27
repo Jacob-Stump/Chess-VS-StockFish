@@ -15,8 +15,6 @@ public class Board implements MouseListener {
 	public String lastMove;
 	public int[] stockFishPieceSelect = new int [2];
 	public int[]stockFishDestinationSelect = new int [2];
-	public boolean validMove = false;
-	
 	public String FEN;
 	private Pieces[][] chessBoard = new Pieces [8][8]; //physical game board
 	private boolean[][] sightBoard = new boolean[8][8];
@@ -294,6 +292,7 @@ public class Board implements MouseListener {
 		}
 		
 	}
+	
 	public void getPieceImages() throws IOException {
     	BufferedImage bf = ImageIO.read(new File("chess.png"));
     	int i = 0;
@@ -305,7 +304,6 @@ public class Board implements MouseListener {
     	}
     }
    
-    
 	public void stockFishMove() {
 		String output = sf.output;
 		String concOutput = output.replace("bestmove ", "");
@@ -317,12 +315,36 @@ public class Board implements MouseListener {
 		int sfDestCol = stockFishDestinationSelect[1];
 		Pieces sfSelect = getPiece(sfSelectRow, sfSelectCol);
 		Pieces sfDest = getPiece(sfDestRow, sfDestCol);
+		Pieces queenSideRook = getPiece(0,0);
+		Pieces kingSideRook = getPiece(0,7);
 		
-		if(chessBoard[sfDestRow][sfDestCol].type == PieceType.NONE) {
+		if(chessBoard[sfSelectRow][sfSelectCol].type == PieceType.KING) {
+			if(sfSelectCol - 2 == sfDestCol) {
+				chessBoard[sfSelectRow][sfSelectCol] = nul;
+				chessBoard[sfDestRow][sfDestCol] = sfSelect;
+				chessBoard[0][3] = queenSideRook;
+				chessBoard[0][0] = nul;
+			}
+			else if(sfSelectCol + 2 == sfDestCol ) {
+				chessBoard[sfSelectRow][sfSelectCol] = nul;
+				chessBoard[sfDestRow][sfDestCol] = sfSelect;
+				chessBoard[0][5] = kingSideRook;
+				chessBoard[0][7] = nul;
+			}
+			return;
+		}
+		
+		if(chessBoard[sfDestRow][sfDestCol].type == PieceType.NONE) { //no piece in dest square
 			chessBoard[sfSelectRow][sfSelectCol] = nul;
 			chessBoard[sfDestRow][sfDestCol] = sfSelect;
 		}
-		frame.repaint();
+		
+		else { //piece in dest square
+			chessBoard[sfSelectRow][sfSelectCol] = nul;
+			chessBoard[sfDestRow][sfDestCol] = sfSelect;
+			int index = pieceBox.indexOf(sfDest);
+			pieceBox.remove(index);
+		}
 	}
 
 	public void getFEN() { //returns FEN for current position in game
@@ -428,7 +450,6 @@ public class Board implements MouseListener {
     	FEN += (" 0 " + moveNumber);
     	FEN += " move e2e4";
     }
-	
 	
 	public void opposingPieceSight() {
     	boardFlip();
@@ -1094,7 +1115,6 @@ public class Board implements MouseListener {
     	return null;
     }
     
-    
     public void opposingSightBoardFlip() {
 		for(int i = 0; i < (blackSightBoard.length / 2); i++) {
 	        boolean[] temp = blackSightBoard[i];
@@ -1121,7 +1141,6 @@ public class Board implements MouseListener {
     	moveNumber++;
     }
     
-    
     public void knightMove() { //need not worry about collision, only correct .COLOR capture on possible moves
     	int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
@@ -1134,25 +1153,26 @@ public class Board implements MouseListener {
 					chessBoard[row][col] = destinationPiece; //places the empty destination square where the knight is
 					chessBoard[rowDest][colDest] = selectedPiece;//places the pawn where the destination square is 
 					boardState();
+					opponentTurn();
 				}
 				else if(rowDest == row + 2 && (colDest == col + 1 || colDest == col -1)) {
 					chessBoard[row][col] = destinationPiece; 
 					chessBoard[rowDest][colDest] = selectedPiece; 
 					boardState();
+					opponentTurn();
 				}
 				else if(colDest == col + 2 && (rowDest == row + 1 || rowDest == row - 1)) {
 					chessBoard[row][col] = destinationPiece; 
 					chessBoard[rowDest][colDest] = selectedPiece;
 					boardState();
+					opponentTurn();
 				}
 				else if(colDest == col - 2 && (rowDest == row + 1 || rowDest == row - 1)) {
 					chessBoard[row][col] = destinationPiece; 
 					chessBoard[rowDest][colDest] = selectedPiece;
 					boardState();
+					opponentTurn();
 				}
-				frame.repaint();
-				
-				
 			}
 			
 			if(destinationPiece.type != PieceType.NONE && destinationPiece.type != PieceType.KING ) {
@@ -1162,6 +1182,7 @@ public class Board implements MouseListener {
 					boardState();
 					int index = pieceBox.indexOf(destinationPiece);
 					pieceBox.remove(index);
+					opponentTurn();
 				}
 				else if(rowDest == row + 2 && (colDest == col + 1 || colDest == col -1)) {
 					chessBoard[row][col] = nul;
@@ -1169,6 +1190,7 @@ public class Board implements MouseListener {
 					boardState();
 					int index = pieceBox.indexOf(destinationPiece);
 					pieceBox.remove(index);
+					opponentTurn();
 				}
 				else if(colDest == col + 2 && (rowDest == row + 1 || rowDest == row - 1)) {
 					chessBoard[row][col] = nul;
@@ -1176,6 +1198,7 @@ public class Board implements MouseListener {
 					boardState();
 					int index = pieceBox.indexOf(destinationPiece);
 					pieceBox.remove(index);
+					opponentTurn();
 				}
 				else if(colDest == col - 2 && (rowDest == row + 1 || rowDest == row - 1)) {
 					chessBoard[row][col] = nul;
@@ -1183,8 +1206,8 @@ public class Board implements MouseListener {
 					boardState();
 					int index = pieceBox.indexOf(destinationPiece);
 					pieceBox.remove(index);
+					opponentTurn();
 				}
-				frame.repaint();
 			}
 			//checking for checks to the opposing king after succesful move is made by using the location of the opposing king and the possible moves of the piece destination coords
 			int[] enemyKing;
@@ -1241,11 +1264,12 @@ public class Board implements MouseListener {
 							chessBoard[bishopRowUp][bishopColLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							
+							opponentTurn();
 						}
 						else if(chessBoard[bishopRowUp][bishopColLeft].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColLeft] = selectedPiece;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1267,11 +1291,12 @@ public class Board implements MouseListener {
 							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							
+							opponentTurn();
 						}
 						else if(chessBoard[bishopRowUp][bishopColRight].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowUp][bishopColRight] = selectedPiece;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1282,7 +1307,6 @@ public class Board implements MouseListener {
 					bishopColRight++;
 				}
 			}
-		
 		}
 			
 		if(rowDest > row && colDest > col) { //if the move is lower right
@@ -1294,11 +1318,12 @@ public class Board implements MouseListener {
 							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							
+							opponentTurn();
 						}
 						else if(chessBoard[bishopRowDown][bishopColRight].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColRight] = selectedPiece;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1320,11 +1345,12 @@ public class Board implements MouseListener {
 							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
-							
+							opponentTurn();
 						}
 						else if(chessBoard[bishopRowDown][bishopColLeft].color == PieceColor.NONE) {
 							chessBoard[row][col] = nul;
 							chessBoard[bishopRowDown][bishopColLeft] = selectedPiece;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1338,10 +1364,7 @@ public class Board implements MouseListener {
 		}
 		boardState();
 		pieceSight();
-		frame.repaint();
-	
 	}
-	
 	
 	public void rookMove() {
 		int row = selectedPieceLocation[0];
@@ -1359,6 +1382,7 @@ public class Board implements MouseListener {
 							chessBoard[rookDown][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 						}
 						else if(chessBoard[rookDown][col].color == PieceColor.WHITE) {
 							break;
@@ -1367,7 +1391,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookDown][colDest] = selectedPiece;
-							validMove = true;
+							opponentTurn();
 						}
 					}
 					else if(chessBoard[rookDown][col].color == PieceColor.WHITE || chessBoard[rookDown][col].color == PieceColor.BLACK) { 
@@ -1384,6 +1408,7 @@ public class Board implements MouseListener {
 							chessBoard[rookUp][colDest] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 							}
 						else if(chessBoard[rookUp][col].color == PieceColor.WHITE) {
 							break;
@@ -1392,7 +1417,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rookUp][colDest] = selectedPiece;
-							validMove = true;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1410,6 +1435,7 @@ public class Board implements MouseListener {
 							chessBoard[rowDest][rookRight] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 						}
 						else if(chessBoard[row][rookRight].color == PieceColor.WHITE) {
 							break;
@@ -1418,7 +1444,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookRight] = selectedPiece;
-							validMove = true;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1437,6 +1463,7 @@ public class Board implements MouseListener {
 							chessBoard[rowDest][rookLeft] = selectedPiece;
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 							}
 						else if(chessBoard[row][rookLeft].color == PieceColor.WHITE) {
 							break;
@@ -1445,7 +1472,7 @@ public class Board implements MouseListener {
 							selectedPiece.hasMoved = true;
 							chessBoard[row][col] = nul;
 							chessBoard[rowDest][rookLeft] = selectedPiece;
-							validMove = true;
+							opponentTurn();
 						}
 						break;
 					}
@@ -1454,14 +1481,9 @@ public class Board implements MouseListener {
 					}
 				}
 			}
-			frame.repaint();
 		}
-		
 		boardState();
 		pieceSight();
-		if (validMove == true) {
-			opponentTurn();
-		}
 	}
 	
 	public void pawnMove() { 
@@ -1480,6 +1502,7 @@ public class Board implements MouseListener {
 						//boardState();
 						int index = pieceBox.indexOf(destinationPiece); //gets index of the taken piece from the piecebox
 						pieceBox.remove(index); //removes taken piece from the piecebox
+						opponentTurn();
 						}
 					}
 					if(col == 7) { //segregation based on whether or not the pawn is on the edge of the players board for out of bounds checking for checks to the king
@@ -1490,6 +1513,7 @@ public class Board implements MouseListener {
 							//boardState();
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 						}
 					}
 					if(col != 0 && col != 7) {
@@ -1500,6 +1524,7 @@ public class Board implements MouseListener {
 							//boardState();
 							int index = pieceBox.indexOf(destinationPiece);
 							pieceBox.remove(index);
+							opponentTurn();
 						}
 					}
 			}
@@ -1509,20 +1534,16 @@ public class Board implements MouseListener {
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul; //places the empty destination square where the pawn is
 					chessBoard[rowDest][colDest] = selectedPiece;//places the pawn where the destination square is 
-					validMove = true;
-					frame.repaint();
-					
+					opponentTurn();
 				}	
 				if(rowDest == row - 2 && colDest == col && selectedPiece.hasMoved == false) {
 					if(chessBoard[row - 1][col].type == PieceType.NONE) {
 						selectedPiece.hasMoved = true;
 						chessBoard[row][col] = nul;
 						chessBoard[rowDest][colDest] = selectedPiece;
-						validMove = true;
+						opponentTurn();
 					}
 				}
-				
-				
 			}
 			
 			if(rowDest != 0) {
@@ -1546,12 +1567,8 @@ public class Board implements MouseListener {
 					}
 				}
 			}
-			
 		}
 		pieceSight();
-		if (validMove == true) {
-			opponentTurn();
-		}
 		return;
 	}
 	
@@ -1571,11 +1588,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { 
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(row < 8 && rowDest == row + 1 && colDest == col) { //king move down
@@ -1585,11 +1604,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(col < 8 && rowDest == row && colDest == col + 1) { //king move right
@@ -1598,12 +1619,14 @@ public class Board implements MouseListener {
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
-					pieceBox.remove(index); 
+					pieceBox.remove(index);
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(col >= 0 && rowDest == row && colDest == col - 1) { //king move left
@@ -1613,11 +1636,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(row >= 0 && col < 8 && rowDest == row - 1 && colDest == col + 1) { //king move upper right
@@ -1627,11 +1652,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(row >= 0 && col >= 0 && rowDest == row - 1 && colDest == col - 1) { //king move upper left
@@ -1641,11 +1668,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(row < 8 && col < 8 && rowDest == row + 1 && colDest == col + 1) { //king move lower right
@@ -1655,11 +1684,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			if(row < 8 && col >= 0 && rowDest == row + 1 && colDest == col - 1) { //king move lower left
@@ -1669,11 +1700,13 @@ public class Board implements MouseListener {
 					chessBoard[rowDest][colDest] = selectedPiece;
 					int index = pieceBox.indexOf(destinationPiece); 
 					pieceBox.remove(index); 
+					opponentTurn();
 				}
 				else if(chessBoard[rowDest][colDest].color == PieceColor.NONE) { //for moving
 					selectedPiece.hasMoved = true;
 					chessBoard[row][col] = nul;
 					chessBoard[rowDest][colDest] = selectedPiece;
+					opponentTurn();
 				}
 			}
 			
@@ -1686,6 +1719,7 @@ public class Board implements MouseListener {
 				chessBoard[rowDest][colDest] = selectedPiece;
 				chessBoard[7][7] = nul;
 				chessBoard[7][5] = wR2;
+				opponentTurn();
 			}
 		}
 		if(destinationPiece.type == PieceType.NONE && rowDest == 7 && colDest == 2 && wR.hasMoved == false && wK.hasMoved == false) {
@@ -1696,10 +1730,10 @@ public class Board implements MouseListener {
 				chessBoard[rowDest][colDest] = selectedPiece;
 				chessBoard[7][0] = nul;
 				chessBoard[7][3] = wR;
+				opponentTurn();
 			}
 		}
 		boardState();
-		frame.repaint();
 	}
 	
 	public void sightState() { //prints current state of the players piece sights
@@ -1729,6 +1763,7 @@ public class Board implements MouseListener {
 		    }
 		}
 	}
+	
 	public void boardState() { //prints out the current state of the board (after a successful move is made?)
 		
 		for(int row = 0; row < chessBoard.length; row++) {
@@ -1870,12 +1905,11 @@ public class Board implements MouseListener {
 		board.boardState();
 		board.sf.startEngine();
 		board.sf.isReady();
-		
     }
 	
 	@Override
 	public void mousePressed(MouseEvent e) { //grabbing piece and piece position from square that mouse is clicked
-		
+	
 		selectedPiece = getPiece(e.getY()/64, e.getX()/64);
 			
 		if(selectedPiece.type == PieceType.NONE) {
@@ -1884,8 +1918,7 @@ public class Board implements MouseListener {
 		
 		selectedPieceLocation = getPosition(selectedPiece);
 		System.out.println(Arrays.toString(selectedPieceLocation));
-		System.out.println(selectedPiece); 
-		validMove = false;
+		System.out.println(selectedPiece);
 	}
 
 	@Override
