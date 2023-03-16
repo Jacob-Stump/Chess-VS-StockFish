@@ -31,7 +31,6 @@ public class Board implements MouseListener {
     public boolean firstmovemade = false;
     private int moveNumber = 1; //keeps track of current move number for stockfish FEN string
     private Stockfish sf = new Stockfish();
-    private createJSON JSON = new createJSON();
       
     private Image[] pieceImages = new Image[12];
     Turn Turn = new Turn(PieceColor.WHITE);
@@ -345,12 +344,6 @@ public class Board implements MouseListener {
 			chessBoard[sfDestRow][sfDestCol] = sfSelect;
 			int index = pieceBox.indexOf(sfDest);
 			pieceBox.remove(index);
-		}
-		try {
-			JSON.createdJSON();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
