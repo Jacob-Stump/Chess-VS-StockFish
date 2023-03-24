@@ -73,7 +73,7 @@ public class Board implements MouseListener {
 	Pieces bP8 = new Pieces(" bP ", PieceColor.BLACK, PieceType.PAWN);
     
  
-	public void arrayToMove() {
+	public void arrayToMove() { //converts array position to PGN position format  (ie. [0,0] to A8)
 		 lastMove = "";
 		int rowSelected = selectedPieceLocation[0];
 		int colSelected = selectedPieceLocation[1];
@@ -183,7 +183,7 @@ public class Board implements MouseListener {
 
 	}
 
-	public void moveToArray(String move) {
+	public void moveToArray(String move) { //converts PGN position to array position (ie.[A8 to [0,0])
 		for(int i = 0; i < move.length(); i++) {
 			if (i == 0) {
 				if(move.charAt(i) == 'a') {
@@ -293,7 +293,7 @@ public class Board implements MouseListener {
 		
 	}
 	
-	public void getPieceImages() throws IOException {
+	public void getPieceImages() throws IOException { //obtains piece images by parsing multiple images from one image
     	BufferedImage bf = ImageIO.read(new File("chess.png"));
     	int i = 0;
     	for(int row = 0; row < 400; row+= 200) {
@@ -304,7 +304,7 @@ public class Board implements MouseListener {
     	}
     }
    
-	public void stockFishMove() {
+	public void stockFishMove() { //obtains and returns the move calculated by stockfish
 		String output = sf.output;
 		String concOutput = output.replace("bestmove ", "");
 		System.out.println(concOutput);
@@ -451,7 +451,7 @@ public class Board implements MouseListener {
     	FEN += " move e2e4";
     }
 	
-	public void opposingPieceSight() {
+	public void opposingPieceSight() { //algorithm to display all squares that are being "looked at" by the opposing color
     	boardFlip();
     	for(int row = 0; row < 8; row++) { //must reset every time to avoid keeping previous sights
     		for(int col = 0; col < 8; col++) {
@@ -772,7 +772,7 @@ public class Board implements MouseListener {
     	
     }
     
-	public void pieceSight() {
+	public void pieceSight() { //algorithm to display all squares that are being "looked at" by the players color"
     	
     	for(int row = 0; row < 8; row++) { //must reset every time to avoid keeping previous sights
     		for(int col = 0; col < 8; col++) {
@@ -1092,7 +1092,7 @@ public class Board implements MouseListener {
     	
     }
 	
-    public int[] getPosition(Pieces p) {
+    public int[] getPosition(Pieces p) { //obtains the current position of the Pieces object being queried in the form of a two index array
     	for(int row = 0; row < 8; row++) {
 			for(int col = 0; col < 8; col++) {
 				if(chessBoard[row][col] == p) {
@@ -1104,7 +1104,7 @@ public class Board implements MouseListener {
     	return position;
     }
     
-    public Pieces getPiece (int rows, int cols) {
+    public Pieces getPiece (int rows, int cols) { //returns the Pieces object at a particular position on the board
     	for(int row = 0; row < 8; row++) {
 			for(int col = 0; col < 8; col++) {
 				if(row == rows && col == cols ) {
@@ -1115,7 +1115,7 @@ public class Board implements MouseListener {
     	return null;
     }
     
-    public void opposingSightBoardFlip() {
+    public void opposingSightBoardFlip() { //flips the boolean board for opposingPieceSight() so it is correctly displayed
 		for(int i = 0; i < (blackSightBoard.length / 2); i++) {
 	        boolean[] temp = blackSightBoard[i];
 	        blackSightBoard[i] = blackSightBoard[blackSightBoard.length - i - 1];
@@ -1123,7 +1123,7 @@ public class Board implements MouseListener {
 		}
 	}
   
-    public void boardFlip() {
+    public void boardFlip() { //flips the main game board along the X-axis
 		for(int i = 0; i < (chessBoard.length / 2); i++) {
 	        Pieces[] temp = chessBoard[i];
 	        chessBoard[i] = chessBoard[chessBoard.length - i - 1];
@@ -1131,7 +1131,7 @@ public class Board implements MouseListener {
 		}
 	}
     
-    public void opponentTurn() {
+    public void opponentTurn() { //initiates functions for stockfish's turn
     	frame.repaint();
     	arrayToMove();
     	getFEN();
@@ -1141,7 +1141,7 @@ public class Board implements MouseListener {
     	moveNumber++;
     }
     
-    public void knightMove() { //need not worry about collision, only correct .COLOR capture on possible moves
+    public void knightMove() { //checks players move for correct/allowed move logic for the knight
     	int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -1244,7 +1244,7 @@ public class Board implements MouseListener {
 		pieceSight();
 	}
 	
-	public void bishopMove() { 
+	public void bishopMove() { //checks players move for correct/allowed move logic for the bishop
 		int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -1366,7 +1366,7 @@ public class Board implements MouseListener {
 		pieceSight();
 	}
 	
-	public void rookMove() {
+	public void rookMove() { //checks players move for correct/allowed move logic for the rook
 		int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -1486,7 +1486,7 @@ public class Board implements MouseListener {
 		pieceSight();
 	}
 	
-	public void pawnMove() { 
+	public void pawnMove() { //checks players move for correct/allowed move logic for the pawn
 		int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -1572,7 +1572,7 @@ public class Board implements MouseListener {
 		return;
 	}
 	
-	public void kingMove() {  
+	public void kingMove() { //checks players move for correct/allowed move logic for the king
 		int row = selectedPieceLocation[0];
 		int col = selectedPieceLocation[1];
 		int rowDest = destinationPieceLocation[0];
@@ -1736,7 +1736,7 @@ public class Board implements MouseListener {
 		boardState();
 	}
 	
-	public void sightState() { //prints current state of the players piece sights
+	public void sightState() { //prints current state of the players piece sights, mostly used for debugging
 		for(int row = 0; row < sightBoard.length; row++) {
 		    System.out.println();
 		    for(int col = 0; col < sightBoard[row].length; col++) {
@@ -1750,7 +1750,7 @@ public class Board implements MouseListener {
 		}
 	}
 	
-	public void blackSightState() { //prints current state of stockfish's piece sight
+	public void blackSightState() { //prints current state of stockfish's piece sight, mostly used for debugging 
 		for(int row = 0; row < blackSightBoard.length; row++) {
 		    System.out.println();
 		    for(int col = 0; col < blackSightBoard[row].length; col++) {
@@ -1764,7 +1764,7 @@ public class Board implements MouseListener {
 		}
 	}
 	
-	public void boardState() { //prints out the current state of the board (after a successful move is made?)
+	public void boardState() { //prints out the current state of the board
 		
 		for(int row = 0; row < chessBoard.length; row++) {
 		    System.out.println();
