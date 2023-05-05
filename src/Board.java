@@ -10,9 +10,14 @@ import javax.swing.*;
 import java.io.*;
 
 
-public class Board implements MouseListener {
+public class Board extends JFrame implements MouseListener {
                        
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static String lastMove;
+	public static int [] enPassantCheck;
 	public int[] stockFishPieceSelect = new int [2];
 	public int[]stockFishDestinationSelect = new int [2];
 	public String FEN;
@@ -31,6 +36,7 @@ public class Board implements MouseListener {
     public boolean firstmovemade = false;
     private int moveNumber = 1; //keeps track of current move number for stockfish FEN string
     private Stockfish sf = new Stockfish();
+    public int SFlevel;
       
     private Image[] pieceImages = new Image[12];
     Turn Turn = new Turn(PieceColor.WHITE);
@@ -73,6 +79,138 @@ public class Board implements MouseListener {
 	Pieces bP8 = new Pieces(" bP ", PieceColor.BLACK, PieceType.PAWN);
     
  
+	public void initializeGUI(Board board) throws IOException {
+		
+		getPieceImages();
+		frame.setBounds(10, 10, 512, 512);
+    	frame.setUndecorated(true);
+    	panel = new JPanel() {
+    		/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+    		public void paint (Graphics g) {
+				Color lightBrown = new Color(184,134,11);
+	   	
+				boolean white = true;
+	    			for(int row = 0; row < 8; row++) {
+	    				for(int col = 0; col < 8; col++) {
+	    					if(white) {
+	    						g.setColor(Color.white);
+	    					}
+	    					else {
+	    						g.setColor(lightBrown);
+	    					}
+	    					
+	    					g.fillRect(row*64, col*64, 64, 64);
+	    					white=!white;
+	    				}
+	    				white=!white;
+	    			}
+	    			
+	    			for(Pieces p: pieceBox) {
+	    				int i = 0;
+	    				if(p.name.equals(" wK ")) {
+	    					i = 0;
+	    				}
+	    				if(p.name.equals(" wQ " )) {
+	    					i = 1;
+	    				}
+	    				if(p.name.equals(" wB ")) {
+	    					i = 2;
+	    				}
+	    				if(p.name.equals(" wN ")) {
+	    					i = 3;
+	    				}
+	    				if(p.name.equals(" wR ")) {
+	    					i = 4;
+	    				}
+	    				if(p.name.equals(" wP ")) {
+	    					i = 5;
+	    				}
+	    				if(p.name.equals(" bK ")) {
+	    					i = 6;
+	    				}
+	    				if(p.name.equals(" bQ ")) {
+	    					i = 7;
+	    				}
+	    				if(p.name.equals(" bB ")) {
+	    					i = 8;
+	    				}
+	    				if(p.name.equals(" bN ")) {
+	    					i = 9;
+	    				}
+	    				if(p.name.equals(" bR ")) {
+	    					i = 10;
+	    				}
+	    				if(p.name.equals(" bP ")) {
+	    					i = 11;
+	    				}
+	    				getPosition(p);
+	    				g.drawImage(pieceImages[i], position[1]*64, position[0]*64, this);
+	    						
+	    			}
+				}
+    	};
+
+    	
+    	frame.add(panel);
+    	frame.addMouseListener(board);
+    	frame.setDefaultCloseOperation(3);
+    	frame.setVisible(true);
+	}
+	
+	public void initializeBoard(Board board) {
+		
+		board.chessBoard[0][0] = board.bR;
+		board.chessBoard[0][1] = board.bN;
+		board.chessBoard[0][2] = board.bB;
+		board.chessBoard[0][3] = board.bQ;
+		board.chessBoard[0][4] = board.bK;
+		board.chessBoard[0][5] = board.bB2;
+		board.chessBoard[0][6] = board.bN2;
+		board.chessBoard[0][7] = board.bR2;
+				
+		board.chessBoard[1][0] = board.bP1;
+		board.chessBoard[1][1] = board.bP2;
+		board.chessBoard[1][2] = board.bP3;
+		board.chessBoard[1][3] = board.bP4;
+		board.chessBoard[1][4] = board.bP5;
+		board.chessBoard[1][5] = board.bP6;
+		board.chessBoard[1][6] = board.bP7;
+		board.chessBoard[1][7] = board.bP8;
+				
+		board.chessBoard[7][0] = board.wR;
+		board.chessBoard[7][1] = board.wN;
+		board.chessBoard[7][2] = board.wB;
+		board.chessBoard[7][3] = board.wQ;
+		board.chessBoard[7][4] = board.wK;
+		board.chessBoard[7][5] = board.wB2;
+		board.chessBoard[7][6] = board.wN2;
+		board.chessBoard[7][7] = board.wR2;
+				
+		board.chessBoard[6][0] = board.wP1;
+		board.chessBoard[6][1] = board.wP2;
+		board.chessBoard[6][2] = board.wP3;
+		board.chessBoard[6][3] = board.wP4;
+		board.chessBoard[6][4] = board.wP5;
+		board.chessBoard[6][5] = board.wP6;
+		board.chessBoard[6][6] = board.wP7;
+		board.chessBoard[6][7] = board.wP8;
+		
+		for(int row = 0; row < board.chessBoard.length; row++) {
+			for(int col = 0; col < board.chessBoard[row].length; col++)
+			{
+				if (board.chessBoard[row][col] == null) {
+					board.chessBoard[row][col] = board.nul;
+				}
+			}
+		}
+		
+	}
+	
 	public void arrayToMove() { //converts array position to PGN position format  (ie. [0,0] to A8)
 		 lastMove = "";
 		int rowSelected = selectedPieceLocation[0];
@@ -294,7 +432,7 @@ public class Board implements MouseListener {
 	}
 	
 	public void getPieceImages() throws IOException { //obtains piece images by parsing multiple images from one image
-    	BufferedImage bf = ImageIO.read(new File("chess.png"));
+    	BufferedImage bf = ImageIO.read(new File("C:\\Users\\Stump\\Desktop\\chess.png"));
     	int i = 0;
     	for(int row = 0; row < 400; row+= 200) {
     		for(int col = 0; col < 1200; col+= 200) {
@@ -318,6 +456,14 @@ public class Board implements MouseListener {
 		Pieces queenSideRook = getPiece(0,0);
 		Pieces kingSideRook = getPiece(0,7);
 		
+		if(chessBoard[sfSelectRow][sfSelectCol].type == PieceType.PAWN && chessBoard[sfSelectRow][sfSelectCol].hasMoved == false) {
+			if(sfSelectCol - 2 == sfDestCol) {
+				enPassantCheck[0] = sfDestRow + 1;
+				enPassantCheck[1] = sfDestCol;
+			}
+		}
+			
+		
 		if(chessBoard[sfSelectRow][sfSelectCol].type == PieceType.KING) {
 			if(sfSelectCol - 2 == sfDestCol) {
 				chessBoard[sfSelectRow][sfSelectCol] = nul;
@@ -325,13 +471,13 @@ public class Board implements MouseListener {
 				chessBoard[0][3] = queenSideRook;
 				chessBoard[0][0] = nul;
 			}
-			else if(sfSelectCol + 2 == sfDestCol ) {
+			if(sfSelectCol + 2 == sfDestCol ) {
 				chessBoard[sfSelectRow][sfSelectCol] = nul;
 				chessBoard[sfDestRow][sfDestCol] = sfSelect;
 				chessBoard[0][5] = kingSideRook;
 				chessBoard[0][7] = nul;
 			}
-			return;
+			
 		}
 		
 		if(chessBoard[sfDestRow][sfDestCol].type == PieceType.NONE) { //no piece in dest square
@@ -1493,6 +1639,23 @@ public class Board implements MouseListener {
 		int colDest = destinationPieceLocation[1];
 		
 		if(destinationPiece.color != selectedPiece.color) { // if the pawn you're moving to does not have a white piece
+			if(destinationPiece.type == PieceType.NONE) {
+				if(col == 0) {
+					if(rowDest == row - 1 && colDest == col + 1) {
+						if(row == enPassantCheck[0] && col == enPassantCheck[1] - 1) {
+							chessBoard[row][col] = nul;
+							chessBoard[rowDest][colDest] = selectedPiece;
+							//boardState();
+							int index = pieceBox.indexOf(destinationPiece); //gets index of the taken piece from the piecebox
+							pieceBox.remove(index); //removes taken piece from the piecebox
+							opponentTurn();
+						}
+					}
+				}
+			}
+			
+			
+			
 			if(destinationPiece.type != PieceType.NONE && destinationPiece.type != PieceType.KING) { // if the square you're moving to is not empty and is not a king (AKA taking an opposite colored piece)
 				if(col == 0) { //segregation based on whether or not the pawn is on the edge of the players board for out of bounds checking for checks to the king
 					if(rowDest == row - 1 && colDest == col + 1) {
@@ -1775,137 +1938,35 @@ public class Board implements MouseListener {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	
+	
 	public static void main(String[] args) throws IOException {
 		
 		Board board = new Board();
-    	board.getPieceImages();
-		board.frame.setBounds(10, 10, 512, 512);
-    	board.frame.setUndecorated(true);
-    	board.panel = new JPanel() {
-    		/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-    		public void paint (Graphics g) {
-				Color lightBrown = new Color(184,134,11);
-	   	
-				boolean white = true;
-	    			for(int row = 0; row < 8; row++) {
-	    				for(int col = 0; col < 8; col++) {
-	    					if(white) {
-	    						g.setColor(Color.white);
-	    					}
-	    					else {
-	    						g.setColor(lightBrown);
-	    					}
-	    					
-	    					g.fillRect(row*64, col*64, 64, 64);
-	    					white=!white;
-	    				}
-	    				white=!white;
-	    			}
-	    			
-	    			for(Pieces p: board.pieceBox) {
-	    				int i = 0;
-	    				if(p.name.equals(" wK ")) {
-	    					i = 0;
-	    				}
-	    				if(p.name.equals(" wQ " )) {
-	    					i = 1;
-	    				}
-	    				if(p.name.equals(" wB ")) {
-	    					i = 2;
-	    				}
-	    				if(p.name.equals(" wN ")) {
-	    					i = 3;
-	    				}
-	    				if(p.name.equals(" wR ")) {
-	    					i = 4;
-	    				}
-	    				if(p.name.equals(" wP ")) {
-	    					i = 5;
-	    				}
-	    				if(p.name.equals(" bK ")) {
-	    					i = 6;
-	    				}
-	    				if(p.name.equals(" bQ ")) {
-	    					i = 7;
-	    				}
-	    				if(p.name.equals(" bB ")) {
-	    					i = 8;
-	    				}
-	    				if(p.name.equals(" bN ")) {
-	    					i = 9;
-	    				}
-	    				if(p.name.equals(" bR ")) {
-	    					i = 10;
-	    				}
-	    				if(p.name.equals(" bP ")) {
-	    					i = 11;
-	    				}
-	    				board.getPosition(p);
-	    				g.drawImage(board.pieceImages[i], board.position[1]*64, board.position[0]*64, this);
-	    						
-	    			}
-				}
-    	};
-
-    	board.frame.add(board.panel);
-    	board.frame.addMouseListener(board);
-    	board.frame.setDefaultCloseOperation(3);
-    	board.frame.setVisible(true);
-	
-		board.chessBoard[0][0] = board.bR;
-		board.chessBoard[0][1] = board.bN;
-		board.chessBoard[0][2] = board.bB;
-		board.chessBoard[0][3] = board.bQ;
-		board.chessBoard[0][4] = board.bK;
-		board.chessBoard[0][5] = board.bB2;
-		board.chessBoard[0][6] = board.bN2;
-		board.chessBoard[0][7] = board.bR2;
-				
-		board.chessBoard[1][0] = board.bP1;
-		board.chessBoard[1][1] = board.bP2;
-		board.chessBoard[1][2] = board.bP3;
-		board.chessBoard[1][3] = board.bP4;
-		board.chessBoard[1][4] = board.bP5;
-		board.chessBoard[1][5] = board.bP6;
-		board.chessBoard[1][6] = board.bP7;
-		board.chessBoard[1][7] = board.bP8;
-				
-		board.chessBoard[7][0] = board.wR;
-		board.chessBoard[7][1] = board.wN;
-		board.chessBoard[7][2] = board.wB;
-		board.chessBoard[7][3] = board.wQ;
-		board.chessBoard[7][4] = board.wK;
-		board.chessBoard[7][5] = board.wB2;
-		board.chessBoard[7][6] = board.wN2;
-		board.chessBoard[7][7] = board.wR2;
-				
-		board.chessBoard[6][0] = board.wP1;
-		board.chessBoard[6][1] = board.wP2;
-		board.chessBoard[6][2] = board.wP3;
-		board.chessBoard[6][3] = board.wP4;
-		board.chessBoard[6][4] = board.wP5;
-		board.chessBoard[6][5] = board.wP6;
-		board.chessBoard[6][6] = board.wP7;
-		board.chessBoard[6][7] = board.wP8;
+		board.initializeGUI(board); //initializing GUI
+		board.initializeBoard(board); //initializing the game logic state
+		//board.boardState();
 		
-		for(int row = 0; row < board.chessBoard.length; row++) {
-			for(int col = 0; col < board.chessBoard[row].length; col++)
-			{
-				if (board.chessBoard[row][col] == null) {
-					board.chessBoard[row][col] = board.nul;
-				}
-			}
-		}
+		String input = JOptionPane.showInputDialog("Choose Stockfish Difficulty (0-20)");
+		int Level = Integer.parseInt(input);
 		
-		board.boardState();
-		board.sf.startEngine();
+		board.sf.startEngine(); //initializing the stockfish engine
+		board.sf.uci();
+		board.sf.setLevel(Level);
 		board.sf.isReady();
     }
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	public void mousePressed(MouseEvent e) { //grabbing piece and piece position from square that mouse is clicked

@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.util.Arrays;
 import java.util.concurrent.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +12,7 @@ public class Stockfish { //wrapper class for stockfish engine
 	private OutputStreamWriter engineWriter; // writes output from stockfish engine 
 	private final String PATH = "C:\\Users\\Stump\\Desktop\\Research Project\\stockfish\\stockfish.exe";
 	public String output;
+	float evaluation;
 
 	public boolean startEngine() {
 		try {
@@ -40,7 +42,7 @@ public class Stockfish { //wrapper class for stockfish engine
 	
 	public void go() {
 		try {
-			engineWriter.write("go\n");
+			engineWriter.write("go depth 20\n");
 			engineWriter.flush();
 			engineProcess.waitFor(500, TimeUnit.MILLISECONDS);
 			engineWriter.write("stop\n");
@@ -55,6 +57,32 @@ public class Stockfish { //wrapper class for stockfish engine
 				System.out.println(line);
 			}
 			System.out.println(output);
+			
+			
+			/*String line2;
+			while ((line2 = engineReader.readLine()) != null) {
+				if (line2.contains("seldepth 20")) {
+					String[] cpline = line2.split(" ");
+					
+					for(int i = 0; i < cpline.length; i++) {
+						String index = cpline[i];
+						if (index.contains("cp")) {
+							String eval = cpline[i+1];
+							System.out.println(eval);
+							int evalu = Integer.parseInt(eval);
+							System.out.println(evalu);
+							evaluation = (float)evalu/100;
+							System.out.println(evaluation);
+						}
+					}
+					break;
+				}
+			}
+			*/
+		
+			
+			
+			
 			
 		}
 		catch (Exception e) {
@@ -80,13 +108,33 @@ public class Stockfish { //wrapper class for stockfish engine
 	
 	public void newGame() {
 		try {
-			engineWriter.write("ucinewgame\\n");
+			engineWriter.write("ucinewgame\n");
 			engineWriter.flush();
 		} 
 		catch (Exception e) {
 			System.out.println("Something went wrong");
 		}
 		System.out.println("Succesfully started new game");
+	}
+	
+	public void uci() {
+		try {
+			engineWriter.write("uci\n");
+			engineWriter.flush();
+		}
+		catch (Exception e) {
+			System.out.println("Something went wrong");
+		}
+	}
+	public void setLevel(int Level) {
+		
+		try {
+			engineWriter.write("setoption name Skill Level value " + Level + "\n");
+			engineWriter.flush();
+		}
+		catch (Exception e) {
+			System.out.println("Something went wrong");
+		}
 	}
 	
 	public static void main(String[] args) {
